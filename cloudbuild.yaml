@@ -13,7 +13,7 @@ steps:
       - 'container'
       - 'clusters'
       - 'get-credentials'
-      - 'your-cluster-name'
+      - 'infra1-gke-cluster'
       - '--zone'
       - 'us-central1-a'    # Set the appropriate zone of your cluster
       - '--project'
