@@ -1,26 +1,15 @@
-resource "google_cloudbuild_trigger" "trigger" {
-  name = "build-trigger"
+resource "google_cloudbuild_trigger" "hello-trigger" {
+  location = "us-central1"
 
-  # Event type to trigger build (GitHub, Cloud Source Repos, etc.)
-  github {
-    owner        = "aiffone"
-    name         = "lloydsinterview"
-    push {
-      branch = "^main$"  # Regex for branch (e.g., trigger on "main" branch)
-    }
+  trigger_template {
+    branch_name = "main"
+    repo_name   = "lloydsinterview"
   }
 
-  # Specify the build steps (inline or file)
-  filename = "cloudbuild.yaml"  # Path to your cloudbuild.yaml file
-
-  # Optional: Define any substitutions you might need
   substitutions = {
-    _CUSTOM_SUBSTITUTION = "custom_value"
+    _FOO = "bar"
+    _BAZ = "qux"
   }
 
-  # Optional: Define the tags for the build trigger
-  tags = ["hello", "build-trigger"]
-
-  # Optional: Define the service account that Cloud Build should use
-  service_account = "cli-service-account-1@playground-s-11-f447010d.iam.gserviceaccount.com"
+  filename = "cloudbuild.yaml"
 }
