@@ -27,7 +27,7 @@ steps:
     args: ['get', 'nodes']
 
   # Step 5: Deploy the application to GKE using Helm
-  - name: 'gcr.io/cloud-builders/helm'
+  - name: 'alpine/helm:3.9.0'
     args:
       - 'upgrade'
       - '--install'
@@ -36,7 +36,7 @@ steps:
       - '--set'
       - 'image.repository=gcr.io/$PROJECT_ID/hello-world'
       - '--set'
-      - 'image.tag=24.0.9'
+      - 'image.tag=latest'
 
 images:
   - 'gcr.io/$PROJECT_ID/hello-world:latest'
