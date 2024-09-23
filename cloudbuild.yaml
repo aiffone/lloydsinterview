@@ -40,5 +40,4 @@ images:
 
 options:
   logging: CLOUD_LOGGING_ONLY  # Cloud Logging enabled
-  logsBucket: 'gs://cloudbuild-logs-00011'  # Define the bucket to store logs
 timeout: '1200s'  # Set timeout to 20 minutes
