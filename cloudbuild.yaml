@@ -9,25 +9,23 @@ steps:
 
   # Step 3: Authenticate to GKE cluster
   - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
     args:
-      - 'container'
-      - 'clusters'
-      - 'get-credentials'
-      - 'infra1-gke-cluster'
-      - '--zone'
-      - 'us-central1'    # Set the appropriate zone of your cluster
-      - '--project'
-      - '$PROJECT_ID'
+      - '-c'
+      - |
+        gcloud components install gke-gcloud-auth-plugin -q
+        gcloud container clusters get-credentials infra1-gke-cluster --zone us-central1 --project $PROJECT_ID
 
   # Step 4: Verify kubectl connectivity by getting the nodes in the cluster
   - name: 'gcr.io/cloud-builders/kubectl'
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
+      - 'KUBECONFIG=/root/.kube/config'  # Ensure KUBECONFIG is set
     args: ['get', 'nodes']
 
   # Step 5: Deploy the application to GKE using Helm
-  - name: 'alpine/helm:3.9.0'
+  - name: 'alpine/helm'
     args:
       - 'upgrade'
       - '--install'
