@@ -1,4 +1,3 @@
-# lloydsinterview/cloudbuild.yaml
 steps:
   # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
@@ -8,18 +7,38 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/hello-world:latest']
 
-  # Step 3: Set up Helm and Kubernetes authentication
+  # Step 3: Authenticate to GKE cluster
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'container'
+      - 'clusters'
+      - 'get-credentials'
+      - 'your-cluster-name'
+      - '--zone'
+      - 'us-central1-a'    # Set the appropriate zone of your cluster
+      - '--project'
+      - '$PROJECT_ID'
+
+  # Step 4: Verify kubectl connectivity by getting the nodes in the cluster
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['get', 'nodes']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'   # Set your GKE cluster zone
-      - 'CLOUDSDK_CONTAINER_CLUSTER=your-cluster-name'
 
-  # Step 4: Deploy the application to GKE using Helm
+  # Step 5: Deploy the application to GKE using Helm
   - name: 'gcr.io/cloud-builders/helm'
-    args: ['upgrade', '--install', 'hello-world', './helm-chart',
-           '--set', 'image.repository=gcr.io/$PROJECT_ID/hello-world',
-           '--set', 'image.tag=latest']
+    args:
+      - 'upgrade'
+      - '--install'
+      - 'hello-world'     # Release name for the Helm deployment
+      - './helm-chart'    # Path to your Helm chart directory
+      - '--set'
+      - 'image.repository=gcr.io/$PROJECT_ID/hello-world'
+      - '--set'
+      - 'image.tag=latest'
 
 images:
   - 'gcr.io/$PROJECT_ID/hello-world:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY  # Cloud Logging enabled
+  logsBucket: 'gs://cloudbuild-logs-00011'  # Define the bucket to store logs
+timeout: '1200s'  # Set timeout to 20 minutes
