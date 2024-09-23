@@ -14,6 +14,6 @@ locals {
 # Enable APIs
 resource "google_project_service" "apis" {
   for_each = toset(local.api_services)
-  project  = "playground-s-11-f447010d"
+  project  = "playground-s-11-cae4b814"
   service  = each.value
 }

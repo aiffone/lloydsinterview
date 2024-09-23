@@ -1,6 +1,6 @@
-terraform {
-  backend "gcs" {
-    bucket = google_storage_bucket.terraform_state.name
-    prefix = "terraform/state"
-  }
-}
+# terraform {
+#   backend "gcs" {
+#     bucket = "state00011"  # Use the static name of the state bucket
+#     prefix = "terraform/state"
+#   }
+# }
