@@ -21,7 +21,7 @@ resource "google_storage_bucket" "terraform_state" {
 
 # New bucket for Cloud Build logs
 resource "google_storage_bucket" "cloudbuild_logs" {
-  name     = "cloudbuild-logs-0001"  # Ensure this name is unique in GCS
+  name     = "cloudbuild-logs-interview-0001"  # Ensure this name is unique in GCS
   location = "US"  # Set to the appropriate location
 
   # Optional settings for logs bucket
