@@ -1,4 +1,4 @@
-resource "google_cloudbuild_trigger" "hello-trigger" {
+resource "google_cloudbuild_trigger" "cloudbuild-trigger" {
   location = "us-central1"
 
   trigger_template {
