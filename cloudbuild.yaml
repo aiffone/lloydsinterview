@@ -7,13 +7,16 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/hello-world:latest']
 
-  # Step 3: Authenticate to GKE cluster
+  # Step 3: Authenticate to GKE cluster and install gke-gcloud-auth-plugin
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gcloud components install gke-gcloud-auth-plugin -q
+        if ! gcloud components install gke-gcloud-auth-plugin -q; then
+          echo "Failed to install gke-gcloud-auth-plugin"
+          exit 1
+        fi
         gcloud container clusters get-credentials infra1-gke-cluster --zone us-central1 --project $PROJECT_ID
 
   # Step 4: Verify kubectl connectivity by getting the nodes in the cluster
@@ -21,7 +24,6 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
-      - 'KUBECONFIG=/root/.kube/config'  # Ensure KUBECONFIG is set
     args: ['get', 'nodes']
 
   # Step 5: Deploy the application to GKE using Helm
@@ -29,8 +31,8 @@ steps:
     args:
       - 'upgrade'
       - '--install'
-      - 'hello-world'     # Release name for the Helm deployment
-      - './helm-chart'    # Path to your Helm chart directory
+      - 'hello-world'
+      - './helm-chart'
       - '--set'
       - 'image.repository=gcr.io/$PROJECT_ID/hello-world'
       - '--set'
@@ -40,5 +42,5 @@ images:
   - 'gcr.io/$PROJECT_ID/hello-world:latest'
 
 options:
-  logging: CLOUD_LOGGING_ONLY  # Cloud Logging enabled
-timeout: '1200s'  # Set timeout to 20 minutes
+  logging: CLOUD_LOGGING_ONLY
+timeout: '1200s'
