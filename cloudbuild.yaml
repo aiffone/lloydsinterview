@@ -15,12 +15,15 @@ steps:
       - 'get-credentials'
       - 'infra1-gke-cluster'
       - '--zone'
-      - 'us-central1'    # Corrected zone
+      - 'us-central1'    # Set the appropriate zone of your cluster
       - '--project'
       - '$PROJECT_ID'
 
   # Step 4: Verify kubectl connectivity by getting the nodes in the cluster
   - name: 'gcr.io/cloud-builders/kubectl'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
     args: ['get', 'nodes']
 
   # Step 5: Deploy the application to GKE using Helm
