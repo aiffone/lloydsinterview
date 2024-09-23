@@ -14,6 +14,11 @@ steps:
       - '-c'
       - |
         # Install the gke-gcloud-auth-plugin
+        gcloud components install kubectl
+        kubectl version --client
+        gke-gcloud-auth-plugin --version
+        gcloud components install gke-gcloud-auth-plugin
+        gke-gcloud-auth-plugin --version
         if ! gcloud components install gke-gcloud-auth-plugin -q; then
           echo "Failed to install gke-gcloud-auth-plugin"
           exit 1
