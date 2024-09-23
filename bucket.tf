@@ -1,6 +1,6 @@
 # Terraform state bucket
 resource "google_storage_bucket" "terraform_state" {
-  name     = "state0001"
+  name     = "state00011"
   location = "US"
 
   versioning {
@@ -20,7 +20,7 @@ resource "google_storage_bucket" "terraform_state" {
 
 # Cloud Build logs bucket
 resource "google_storage_bucket" "cloudbuild_logs" {
-  name     = "cloudbuild-logs-0001"
+  name     = "cloudbuild-logs-00011"
   location = "US"
 
   versioning {
