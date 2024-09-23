@@ -45,6 +45,7 @@ steps:
       - 'image.repository=gcr.io/$PROJECT_ID/hello-world'
       - '--set'
       - 'image.tag=latest'
+      - '--debug'
 
 images:
   - 'gcr.io/$PROJECT_ID/hello-world:latest'
