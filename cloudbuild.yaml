@@ -15,7 +15,7 @@ steps:
       - 'get-credentials'
       - 'infra1-gke-cluster'
       - '--zone'
-      - 'us-central1-a'    # Set the appropriate zone of your cluster
+      - 'us-central1'    # Corrected zone
       - '--project'
       - '$PROJECT_ID'
 
