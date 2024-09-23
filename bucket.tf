@@ -15,7 +15,6 @@ resource "google_storage_bucket" "terraform_state" {
     condition {
       age = 365
     }
-  }
 }
 
 # Cloud Build logs bucket
