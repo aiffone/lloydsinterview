@@ -12,13 +12,25 @@ steps:
     args: ['-c', 'terraform init']
     dir: './'  # Directory where your Terraform files are located
 
-  # Step 3: Import existing resources
+  # Step 3: Check and import existing resources
   - name: 'hashicorp/terraform:1.5.3'
     id: 'Terraform Import'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
+        # Check if the resources are already in the state and remove if necessary
+        if terraform state list | grep -q 'google_storage_bucket.terraform_state'; then
+          echo "Removing existing resource from state: google_storage_bucket.terraform_state"
+          terraform state rm google_storage_bucket.terraform_state
+        fi
+        if terraform state list | grep -q 'google_storage_bucket.cloudbuild_logs'; then
+          echo "Removing existing resource from state: google_storage_bucket.cloudbuild_logs"
+          terraform state rm google_storage_bucket.cloudbuild_logs
+        fi
+
+        # Import the resources
+        echo "Importing resources..."
         terraform import google_storage_bucket.terraform_state projects/${PROJECT_ID}/buckets/state00011
         terraform import google_storage_bucket.cloudbuild_logs projects/${PROJECT_ID}/buckets/cloudbuild-logs-00011
     dir: './'  # Directory where your Terraform files are located
