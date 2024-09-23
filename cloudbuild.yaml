@@ -36,7 +36,7 @@ steps:
       - '--set'
       - 'image.repository=gcr.io/$PROJECT_ID/hello-world'
       - '--set'
-      - 'image.tag=latest'
+      - 'image.tag=24.0.9'
 
 images:
   - 'gcr.io/$PROJECT_ID/hello-world:latest'
