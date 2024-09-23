@@ -1,0 +1,12 @@
+# lloydsinterview/helm-chart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 8080
+  selector:
+    app: hello-world
