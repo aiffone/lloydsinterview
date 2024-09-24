@@ -20,7 +20,7 @@ steps:
     dir: './'  # Directory where your Terraform files are located
     waitFor: ['Terraform Init']
 
-  # Step 4: Plan the Terraform deployment
+  # Step 4: Plan the Terraform deployment (can add -target if needed to limit scope)
   - name: 'hashicorp/terraform:1.5.3'
     id: 'Terraform Plan'
     entrypoint: 'sh'
@@ -28,7 +28,7 @@ steps:
     dir: './'  # Directory where your Terraform files are located
     waitFor: ['Terraform Validate']
 
-  # Step 5: Apply the Terraform configuration
+  # Step 5: Apply the Terraform configuration (will only apply planned changes)
   - name: 'hashicorp/terraform:1.5.3'
     id: 'Terraform Apply'
     entrypoint: 'sh'
