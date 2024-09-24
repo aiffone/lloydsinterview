@@ -2,7 +2,7 @@
 replicaCount: 2
 
 image:
-  repository: gcr.io/playground-s-11-cae4b814/hello-world
+  repository: gcr.io/playground-s-11-206df3f9/hello-world
   tag: latest
   pullPolicy: Always
 
