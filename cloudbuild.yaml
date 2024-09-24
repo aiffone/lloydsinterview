@@ -19,3 +19,9 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
+
+# Optional: Set the service account (if needed)
+serviceAccount: "your-service-account@your-project.iam.gserviceaccount.com"
+
+# Specify logs bucket for Cloud Build logs
+logsBucket: "gs://cloudbuild-logs-00111"  # Replace with your actual bucket name
