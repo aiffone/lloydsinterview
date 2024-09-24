@@ -8,16 +8,18 @@ steps:
     args: ['push', 'gcr.io/$PROJECT_ID/hello-world:latest']
 
   # Step 3: Deploy to GKE using Helm
-  - name: 'gcr.io/cloud-builders/helm'
+  - name: 'alpine/helm'
     args:
       - 'upgrade'
       - '--install'
       - 'hello-world'
       - './helm-chart'
       - '--set'
-      - 'image.repository=gcr.io/$PROJECT_ID/hello-world,image.tag=latest'
+      - 'image.repository=gcr.io/$PROJECT_ID/hello-world'
+      - '--set'
+      - 'image.tag=latest'
 
-  # Step 4: Set environment variables for GKE cluster
+  # Optional: Set environment variables for GKE cluster
   env:
     - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
     - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
