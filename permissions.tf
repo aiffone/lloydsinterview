@@ -1,27 +1,28 @@
-# Get the Cloud Build service account
+# Define the project where the roles will be assigned
 data "google_project" "project" {}
 
-data "google_service_account" "cloud_build_sa" {
-  account_id = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+# Define the service account
+variable "service_account_email" {
+  default = "cli-service-account-1@playground-s-11-206df3f9.iam.gserviceaccount.com"
 }
 
 # Grant Kubernetes Engine Developer role
-resource "google_project_iam_binding" "cloud_build_kubernetes_developer" {
+resource "google_project_iam_binding" "kubernetes_developer" {
   project = var.project_id
   role    = "roles/container.developer"
 
   members = [
-    "serviceAccount:${data.google_service_account.cloud_build_sa.email}"
+    "serviceAccount:${var.service_account_email}"
   ]
 }
 
 # Grant Kubernetes Engine Admin role
-resource "google_project_iam_binding" "cloud_build_kubernetes_admin" {
+resource "google_project_iam_binding" "kubernetes_admin" {
   project = var.project_id
   role    = "roles/container.admin"
 
   members = [
-    "serviceAccount:${data.google_service_account.cloud_build_sa.email}"
+    "serviceAccount:${var.service_account_email}"
   ]
 }
 
@@ -31,26 +32,26 @@ resource "google_project_iam_binding" "cloud_build_editor" {
   role    = "roles/cloudbuild.builds.editor"
 
   members = [
-    "serviceAccount:${data.google_service_account.cloud_build_sa.email}"
+    "serviceAccount:${var.service_account_email}"
   ]
 }
 
 # Grant Viewer role (optional, if needed for read-only access)
-resource "google_project_iam_binding" "cloud_build_viewer" {
+resource "google_project_iam_binding" "viewer" {
   project = var.project_id
   role    = "roles/viewer"
 
   members = [
-    "serviceAccount:${data.google_service_account.cloud_build_sa.email}"
+    "serviceAccount:${var.service_account_email}"
   ]
 }
 
 # Grant Storage Admin role (optional, if needed for GCS access)
-resource "google_project_iam_binding" "cloud_build_storage_admin" {
+resource "google_project_iam_binding" "storage_admin" {
   project = var.project_id
   role    = "roles/storage.admin"
 
   members = [
-    "serviceAccount:${data.google_service_account.cloud_build_sa.email}"
+    "serviceAccount:${var.service_account_email}"
   ]
 }
