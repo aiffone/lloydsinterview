@@ -12,13 +12,21 @@ steps:
     args: ['-c', 'terraform init']
     dir: './'  # Directory where your Terraform files are located
 
+  # Step 3: Validate the Terraform configuration
+  - name: 'hashicorp/terraform:1.5.3'
+    id: 'Terraform Validate'
+    entrypoint: 'sh'
+    args: ['-c', 'terraform validate']
+    dir: './'  # Directory where your Terraform files are located
+    waitFor: ['Terraform Init']
+
   # Step 4: Plan the Terraform deployment
   - name: 'hashicorp/terraform:1.5.3'
     id: 'Terraform Plan'
     entrypoint: 'sh'
     args: ['-c', 'terraform plan -out=tfplan']
     dir: './'  # Directory where your Terraform files are located
-    waitFor: ['Terraform Import']
+    waitFor: ['Terraform Validate']
 
   # Step 5: Apply the Terraform configuration
   - name: 'hashicorp/terraform:1.5.3'
