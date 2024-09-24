@@ -9,17 +9,13 @@ steps:
 
   # Step 3: Deploy to GKE using Helm
   - name: 'alpine/helm'
+    entrypoint: 'sh'
     args:
-      - 'upgrade'
-      - '--install'
-      - 'hello-world'
-      - './helm-chart'
-      - '--set'
-      - 'image.repository=gcr.io/$PROJECT_ID/hello-world'
-      - '--set'
-      - 'image.tag=latest'
-
-  # Optional: Set environment variables for GKE cluster
-  env:
-    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-    - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
+      - '-c'
+      - |
+        helm upgrade --install hello-world ./helm-chart \
+        --set image.repository=gcr.io/$PROJECT_ID/hello-world \
+        --set image.tag=latest
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
