@@ -17,13 +17,13 @@ steps:
         --set image.repository=gcr.io/$PROJECT_ID/hello-world \
         --set image.tag=latest
     env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
       - 'PRIVATE_KEY=$$PRIVATE_KEY'
       - 'PUBLIC_KEY=$$PUBLIC_KEY'
 
 # Optional: Set the service account (if needed)
-serviceAccount: "1081145712271-compute@developer.gserviceaccount.com"
+serviceAccount: "jenkins@infra1-430721.iam.gserviceaccount.com"
 
 # Specify logs bucket for Cloud Build logs
 logsBucket: "gs://cloudbuild-logs-00111"  # Replace with your actual bucket name
