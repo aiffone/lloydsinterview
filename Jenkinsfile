@@ -38,7 +38,7 @@ pipeline {
                     withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                         // Replace 'your-cluster-name' with the actual name of your cluster
-                        sh 'gcloud container clusters get-credentials my-cluster --zone europe-west1-b --project infra1-430721'
+                        sh 'gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project infra1-430721'
                     }
                     echo 'Deploying with Helm...'
                     sh '''
