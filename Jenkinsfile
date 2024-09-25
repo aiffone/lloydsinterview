@@ -10,18 +10,21 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    sh 'docker build -t yourusername/hello-world:nanoserver-ltsc2022 .'
+                    sh 'docker build -t gcr.io/YOUR_PROJECT_ID/hello-world:latest .'
                 }
             }
         }
-        stage('Push Docker Image') {
+        stage('Push Docker Image to GCR') {
             steps {
                 script {
-                    echo 'Pushing Docker image...'
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
-                        sh 'docker push yourusername/hello-world:nanoserver-ltsc2022'
+                    echo 'Authenticating with Google Cloud...'
+                    withCredentials([file(credentialsId: 'gcr-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+                        sh 'gcloud auth configure-docker --quiet'
                     }
+                    
+                    echo 'Pushing Docker image to GCR...'
+                    sh 'docker push gcr.io/YOUR_PROJECT_ID/hello-world:latest'
                 }
             }
         }
