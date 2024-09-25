@@ -14,6 +14,15 @@ pipeline {
             }
         }
 
+        stage('Check Python Installation') {
+    steps {
+        script {
+            sh 'python --version || python3 --version'
+        }
+    }
+}
+
+        
         stage('Setup Python Environment') {
             steps {
                 script {
