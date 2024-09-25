@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    sh 'docker build -t hello-world:nanoserver-ltsc2022 .'
+                    sh 'docker build -t yourusername/hello-world:nanoserver-ltsc2022 .'
                 }
             }
         }
@@ -18,10 +18,9 @@ pipeline {
             steps {
                 script {
                     echo 'Pushing Docker image...'
-                    // Using credentials for Docker login
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
-                        sh 'docker push hello-world:nanoserver-ltsc2022'
+                        sh 'docker push yourusername/hello-world:nanoserver-ltsc2022'
                     }
                 }
             }
