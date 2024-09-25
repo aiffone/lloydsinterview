@@ -18,4 +18,4 @@ COPY app/app.py /app/
 EXPOSE 8080
 
 # Command to run the app
-CMD ["python", "app.py"]  # This assumes app.py is directly in /app
+CMD ["python3", "app.py"]  # This assumes app.py is directly in /app
