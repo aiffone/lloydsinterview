@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-world-service
+  name: {{ .Release.Name }}-service  # Name of the service, based on the release name
+  namespace: {{ .Values.namespace }}  # Use the namespace value from values.yaml
 spec:
-  type: LoadBalancer
+  type: ClusterIP  # Change to LoadBalancer or NodePort if you want external access
   selector:
-    app: hello-world
+    app: {{ .Release.Name }}  # Selector to match the deployment
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
+    - port: 80  # Port that the service exposes
+      targetPort: {{ .Values.containerPort }}  # Port on the pod that the service will forward to

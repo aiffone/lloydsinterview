@@ -1,13 +1,15 @@
-# lloydsinterview/helm-chart/values.yaml
-replicaCount: 2
+# values.yaml
 
+# Namespace to deploy into
+namespace: microservices
+
+# Number of replicas
+replicas: 2
+
+# Image settings
 image:
-  repository: gcr.io/infra1-430721/hello-world
+  repository: europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world  # Updated image reference
   tag: latest
-  pullPolicy: Always
 
-service:
-  type: LoadBalancer
-  port: 80
-
-resources: {}
+# Container port
+containerPort: 8080

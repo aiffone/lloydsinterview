@@ -1,19 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-world-deployment
+  name: {{ .Release.Name }}-deployment
+  namespace: {{ .Values.namespace }}  # Use the namespace value from values.yaml
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicas }}  # Use replicas value from values.yaml
   selector:
     matchLabels:
-      app: hello-world
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: hello-world
+        app: {{ .Release.Name }}
     spec:
       containers:
-      - name: hello-world
-        image: gcr.io/$(PROJECT_ID)/hello-world:latest
+      - name: {{ .Release.Name }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}  # Image reference from values.yaml
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.containerPort }}  # Container port from values.yaml
