@@ -10,21 +10,23 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    sh 'docker build -t gcr.io/infra1-430721/hello-world:latest .'
+                    // Building the Docker image with the new Artifact Registry repository URL
+                    sh 'docker build -t europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest .'
                 }
             }
         }
-        stage('Push Docker Image to GCR') {
+        stage('Push Docker Image to Artifact Registry') {
             steps {
                 script {
                     echo 'Authenticating with Google Cloud...'
                     withCredentials([file(credentialsId: 'gcr-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                        sh 'gcloud auth configure-docker --quiet'
+                        sh 'gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet'
                     }
                     
-                    echo 'Pushing Docker image to GCR...'
-                    sh 'docker push gcr.io/infra1-430721/hello-world:latest'
+                    echo 'Pushing Docker image to Artifact Registry...'
+                    // Pushing the Docker image to Artifact Registry in europe-west1
+                    sh 'docker push europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest'
                 }
             }
         }
