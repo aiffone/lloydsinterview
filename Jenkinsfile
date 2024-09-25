@@ -15,21 +15,22 @@ pipeline {
         }
 
         stage('Check Python Installation') {
-    steps {
-        script {
-            sh 'python --version || python3 --version'
+            steps {
+                script {
+                    echo 'Checking Python installation...'
+                    // Check Python versions
+                    sh 'python --version || python3 --version'
+                }
+            }
         }
-    }
-}
 
-        
         stage('Setup Python Environment') {
             steps {
                 script {
                     echo 'Setting up Python virtual environment...'
-                    // Create a virtual environment and install Flask
+                    // Create a virtual environment and install Flask using python3
                     sh '''
-                        python -m venv venv
+                        python3 -m venv venv
                         . venv/bin/activate  # Activate the virtual environment
                         pip install Flask
                     '''
@@ -37,16 +38,22 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Pull Hello World Image') {
             steps {
                 script {
-                    echo 'Building Docker image...'
-                    
-                    // Ensure we are in the right directory
-                    sh 'ls -la'  // List files to verify
+                    echo 'Pulling Hello World image from Docker Hub...'
+                    // Pull the hello-world image from Docker Hub
+                    sh 'docker pull hello-world'
+                }
+            }
+        }
 
-                    // Build the Docker image
-                    sh 'docker build -t europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest .'
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    echo 'Tagging the Hello World image...'
+                    // Tag the pulled image for GCR
+                    sh 'docker tag hello-world europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest'
                 }
             }
         }
