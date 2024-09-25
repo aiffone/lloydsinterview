@@ -10,11 +10,11 @@ COPY requirements.txt ./
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the app files
-COPY . .
+# Copy the rest of the app files from the app directory
+COPY app/ ./  # Adjusted to copy the app directory content to /app in the container
 
 # Expose port 8080 for the app
 EXPOSE 8080
 
 # Command to run the app
-CMD ["python", "app.py"]
+CMD ["python", "app.py"]  # No change needed here, assuming the file is in /app
