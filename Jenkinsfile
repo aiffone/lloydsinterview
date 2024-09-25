@@ -37,15 +37,15 @@ pipeline {
                     echo 'Authenticating with GKE...'
                     withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                        sh 'gcloud container clusters get-credentials your-cluster-name --zone your-zone --project infra1-430721'
+                        // Replace 'your-cluster-name' with the actual name of your cluster
+                        sh 'gcloud container clusters get-credentials my-cluster --zone europe-west1-b --project infra1-430721'
                     }
                     echo 'Deploying with Helm...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace microservices \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
-                        --set image.tag=latest \
-                        --set containerPort=8081  # Updated to use port 8081
+                        --set image.tag=latest
                     '''
                 }
             }
