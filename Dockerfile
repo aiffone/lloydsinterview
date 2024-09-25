@@ -11,7 +11,8 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the entire app directory into /app in the container
-COPY app /app  # Directly copy the app directory
+COPY app/app.py /app/
+# Directly copy the app directory
 
 # Expose port 8080 for the app
 EXPOSE 8080
