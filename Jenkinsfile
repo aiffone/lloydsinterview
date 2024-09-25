@@ -1,31 +1,21 @@
 pipeline {
-    agent any // Use any available agent
-
+    agent any
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from GitHub
-                git url: 'https://github.com/aiffone/lloydsinterview.git', branch: 'master'
+                // Check out the code from GitHub
+                git url: 'https://github.com/aiffone/lloydsinterview.git', credentialsId: 'github-pat'
             }
         }
-        
         stage('Run Groovy Script') {
             steps {
-                // Run the Groovy script (assuming the script is located at the root)
                 script {
-                    // Replace 'YourScript.groovy' with the actual name of your Groovy script
-                    def groovyScript = 'YourScript.groovy'
-                    def groovyHome = tool name: 'groovy', type: 'groovy' // Assuming Groovy is installed on Jenkins
-                    sh "${groovyHome}/bin/groovy ${groovyScript}"
+                    // Your Groovy script logic here
+                    echo 'Running Groovy script...'
+                    // Example: run a Groovy script file
+                    // sh 'groovy your-script.groovy'
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            // Cleanup or notification steps can go here
-            echo 'Pipeline completed.'
         }
     }
 }
