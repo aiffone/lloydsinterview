@@ -16,5 +16,5 @@ COPY app/ ./  # This copies everything from app directory into /app
 # Expose port 8080 for the app
 EXPOSE 8080
 
-# Command to run the app
-CMD ["python3", "app.py"]  # Ensure app.py is in /app
+# Command to run the app (using the full path to python3)
+CMD ["/usr/local/bin/python3", "app.py"] 
