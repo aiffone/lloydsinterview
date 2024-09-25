@@ -14,16 +14,22 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Pull Hello World Image') {
             steps {
                 script {
-                    echo 'Building Docker image...'
-                    
-                    // List the contents of the current directory to verify
-                    sh 'ls -la'
+                    echo 'Pulling Hello World image from Docker Hub...'
+                    // Pull the hello-world image from Docker Hub
+                    sh 'docker pull hello-world'
+                }
+            }
+        }
 
-                    // Build the Docker image
-                    sh 'docker build -t europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest .'
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    echo 'Tagging the Hello World image...'
+                    // Tag the pulled image for GCR
+                    sh 'docker tag hello-world europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest'
                 }
             }
         }
