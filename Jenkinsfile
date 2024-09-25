@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    sh 'docker build -t gcr.io/YOUR_PROJECT_ID/hello-world:latest .'
+                    sh 'docker build -t gcr.io/infra1-430721/hello-world:latest .'
                 }
             }
         }
@@ -24,7 +24,7 @@ pipeline {
                     }
                     
                     echo 'Pushing Docker image to GCR...'
-                    sh 'docker push gcr.io/YOUR_PROJECT_ID/hello-world:latest'
+                    sh 'docker push gcr.io/infra1-430721/hello-world:latest'
                 }
             }
         }
