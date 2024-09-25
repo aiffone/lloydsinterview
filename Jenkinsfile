@@ -39,13 +39,13 @@ pipeline {
                         sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                         sh 'gcloud container clusters get-credentials your-cluster-name --zone your-zone --project infra1-430721'
                     }
-                    echo 'Deploying with Helm to namespace microservices...'
+                    echo 'Deploying with Helm...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace microservices \
-                        --create-namespace \  # This ensures the namespace is created if it doesn't exist
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
-                        --set image.tag=latest
+                        --set image.tag=latest \
+                        --set containerPort=8081  # Updated to use port 8081
                     '''
                 }
             }
