@@ -1,10 +1,20 @@
-from flask import Flask
+# Use a Python base image
+FROM python:3.9-slim
 
-app = Flask(__name__)
+# Set the working directory in the container
+WORKDIR /app
 
-@app.route("/")
-def hello_world():
-    return "Hello, World from Flask!"
+# Copy requirements.txt to the working directory
+COPY requirements.txt ./
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the entire app directory into /app in the container
+COPY app/ ./  # This copies everything from app directory into /app
+
+# Expose port 8080 for the app
+EXPOSE 8080
+
+# Command to run the app
+CMD ["python3", "app.py"]  # Ensure app.py is in /app
