@@ -14,22 +14,30 @@ pipeline {
             }
         }
 
-        stage('Pull Hello World Image') {
+        stage('Setup Python Environment') {
             steps {
                 script {
-                    echo 'Pulling Hello World image from Docker Hub...'
-                    // Pull the hello-world image from Docker Hub
-                    sh 'docker pull hello-world'
+                    echo 'Setting up Python virtual environment...'
+                    // Create a virtual environment and install Flask
+                    sh '''
+                        python -m venv venv
+                        . venv/bin/activate  # Activate the virtual environment
+                        pip install Flask
+                    '''
                 }
             }
         }
 
-        stage('Tag Docker Image') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    echo 'Tagging the Hello World image...'
-                    // Tag the pulled image for GCR
-                    sh 'docker tag hello-world europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest'
+                    echo 'Building Docker image...'
+                    
+                    // Ensure we are in the right directory
+                    sh 'ls -la'  // List files to verify
+
+                    // Build the Docker image
+                    sh 'docker build -t europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest .'
                 }
             }
         }

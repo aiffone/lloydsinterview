@@ -1,20 +1,13 @@
-# Use a Python base image
-FROM python:3.9-slim
+from flask import Flask
 
-# Set the working directory in the container
-WORKDIR /app
+# Create a new Flask application
+app = Flask(__name__)
 
-# Copy requirements.txt to the working directory
-COPY requirements.txt ./
+# Define a route for the root URL
+@app.route("/")
+def hello_world():
+    return "Hello, World!"
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the entire app directory into /app in the container
-COPY app/ ./  # This copies everything from app directory into /app
-
-# Expose port 8080 for the app
-EXPOSE 8080
-
-# Command to run the app (using the full path to python3)
-CMD ["/usr/local/bin/python3", "app.py"] 
+# Run the application
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)  # Expose the app on port 8080
