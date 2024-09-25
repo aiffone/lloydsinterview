@@ -5,14 +5,14 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy requirements.txt and install dependencies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt  # Use --no-cache-dir to reduce image size
+COPY requirements.txt ./  # Note: Use ./ to specify current directory clearly
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the app files
-COPY . .  # This copies everything from the current directory to /app
+COPY . ./  # Ensure it copies all files from current directory
 
 # Expose port 8080 for the app
 EXPOSE 8080
 
 # Command to run the app
-CMD ["python", "app.py"]  # Ensure app.py exists in the root of the working directory
+CMD ["python", "app.py"]  # Using JSON array format for CMD
