@@ -14,62 +14,14 @@ pipeline {
             }
         }
 
-        stage('Check Python Installation') {
+        stage('Authenticate with GKE') {
             steps {
                 script {
-                    echo 'Checking Python installation...'
-                    sh '''
-                        if ! python --version 2>/dev/null; then
-                            echo "Python 2 not found, checking Python 3..."
-                            python3 --version
-                        fi
-                    '''
-                }
-            }
-        }
-
-        stage('Setup Python Environment') {
-            steps {
-                script {
-                    echo 'Setting up Python virtual environment...'
-                    sh '''
-                        python3 -m venv venv
-                        . venv/bin/activate  # Use . instead of source for compatibility
-                        pip install Flask
-                    '''
-                }
-            }
-        }
-
-        stage('Pull Hello World Image') {
-            steps {
-                script {
-                    echo 'Pulling Hello World image from Docker Hub...'
-                    sh 'docker pull hello-world'
-                }
-            }
-        }
-
-        stage('Tag Docker Image') {
-            steps {
-                script {
-                    echo 'Tagging the Hello World image...'
-                    sh 'docker tag hello-world europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest'
-                }
-            }
-        }
-
-        stage('Push Docker Image to Artifact Registry') {
-            steps {
-                script {
-                    echo 'Authenticating with Google Cloud...'
-                    withCredentials([file(credentialsId: 'gcr-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    echo 'Authenticating with Google Cloud and GKE...'
+                    withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                        sh 'gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet'
+                        sh 'gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project infra1-430721'
                     }
-
-                    echo 'Pushing Docker image to Artifact Registry...'
-                    sh 'docker push europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest'
                 }
             }
         }
@@ -77,14 +29,8 @@ pipeline {
         stage('Clean Up Existing Helm Releases') {
             steps {
                 script {
-                    echo 'Authenticating with GKE...'
-                    withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                        sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                        sh 'gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project infra1-430721'
-                    }
-
                     echo 'Deleting all existing Helm releases in the "microservices" namespace...'
-                    // This command will delete all Helm releases in the specified namespace
+                    // Delete all existing Helm releases in the specified namespace
                     sh '''
                         helm list --namespace microservices -q | xargs -r helm delete --namespace microservices
                     '''
@@ -95,7 +41,7 @@ pipeline {
         stage('Deploy with Helm') {
             steps {
                 script {
-                    echo 'Deploying application with Helm...'
+                    echo 'Deploying Hello World application with Helm...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace microservices \
@@ -103,8 +49,15 @@ pipeline {
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest
                     '''
+                }
+            }
+        }
 
+        stage('Verify Deployment Status') {
+            steps {
+                script {
                     echo 'Checking deployment status...'
+                    // Wait for the rollout to complete
                     sh 'kubectl rollout status deployment/hello-world -n microservices'
                 }
             }
