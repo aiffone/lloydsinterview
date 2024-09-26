@@ -1,4 +1,4 @@
 apiVersion: v2
-name: hello-world
+name: hello-world-jenkins
 description: A Helm chart for deploying Hello World app
 version: 0.1.0
