@@ -91,10 +91,11 @@ pipeline {
                     echo 'Cleaning up conflicting Helm releases...'
                     // Attempt to clean up any existing release in conflicting namespace if present
                     sh '''
-                        helm status hello-world --namespace pythonmicro || true
-                        if [ $? -eq 0 ]; then
+                        if helm status hello-world --namespace pythonmicro > /dev/null 2>&1; then
                             echo "Deleting old release in pythonmicro namespace..."
-                            helm delete hello-world --namespace pythonmicro
+                            helm delete hello-world --namespace pythonmicro || true
+                        else
+                            echo "No conflicting release found in pythonmicro namespace."
                         fi
                     '''
 
