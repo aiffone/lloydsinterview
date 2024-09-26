@@ -17,7 +17,7 @@ steps:
         gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project $PROJECT_ID
 
   # Step 4: Deploy the image to GKE using Helm.
-  - name: 'alpine/helm'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Switch to cloud-sdk image
     entrypoint: 'sh'
     args:
       - '-c'
