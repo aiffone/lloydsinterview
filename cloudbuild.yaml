@@ -34,4 +34,4 @@ steps:
 serviceAccount: "jenkins@infra1-430721.iam.gserviceaccount.com"
 
 # Specify logs bucket for Cloud Build logs.
-logsBucket: "gs://cloudbuild-logs-00111"  # Replace with your actual bucket name.
+logsBucket: "gs://cloudbuild-logs-01101"  # Replace with your actual bucket name.
