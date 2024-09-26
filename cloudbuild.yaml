@@ -16,18 +16,29 @@ steps:
         echo "Authenticating with GKE in the region..."
         gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project $PROJECT_ID
 
-  # Step 4: Install Helm and Deploy to GKE using Helm.
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image and install Helm manually
+  # Step 4: Create the new namespace if it doesn't exist.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        echo "Creating namespace 'pythonmicro' if it doesn't exist..."
+        kubectl get namespace pythonmicro || kubectl create namespace pythonmicro
+
+  # Step 5: Deploy the image to GKE using Helm in the specified namespace.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image
     entrypoint: 'sh'
     args:
       - '-c'
       - |
         echo "Installing Helm..."
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-        echo "Deploying to GKE with Helm..."
+        echo "Deploying to GKE with Helm in the 'pythonmicro' namespace..."
         helm upgrade --install hello-world ./helm-chart \
         --set image.repository=gcr.io/$PROJECT_ID/hello-world \
-        --set image.tag=latest
+        --set image.tag=latest \
+        --namespace pythonmicro \
+        --create-namespace
     env:
       - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
