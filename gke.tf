@@ -5,7 +5,7 @@ resource "google_container_cluster" "primary" {
   network    = google_compute_network.vpc_network.id
   subnetwork = google_compute_subnetwork.vpc_subnetwork.id
 
-  initial_node_count = 0  # Set to 0 as we are using a custom node pool
+  initial_node_count = 1  # Set to 0 as we are using a custom node pool
 
   # Add necessary configurations if needed (optional)
   # enable_legacy_abac = false  # Optional: Disables legacy ABAC
