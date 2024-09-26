@@ -14,10 +14,10 @@ variable "region" {
   default     = "europe-west1"
 }
 
-# variable "cluster_name" {
-#   description = "The name of the GKE cluster"
-#   default     = "infra1-gke-cluster"
-# }
+variable "cluster_name" {
+  description = "The name of the GKE cluster"
+  default     = "infra1-gke-cluster"
+}
 
 variable "network_name" {
   description = "The name of the VPC network"
