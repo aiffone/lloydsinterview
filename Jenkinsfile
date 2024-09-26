@@ -87,7 +87,17 @@ pipeline {
                         // Get credentials for the GKE cluster
                         sh 'gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project infra1-430721'
                     }
-                    
+
+                    echo 'Cleaning up conflicting Helm releases...'
+                    // Attempt to clean up any existing release in conflicting namespace if present
+                    sh '''
+                        helm status hello-world --namespace pythonmicro || true
+                        if [ $? -eq 0 ]; then
+                            echo "Deleting old release in pythonmicro namespace..."
+                            helm delete hello-world --namespace pythonmicro
+                        fi
+                    '''
+
                     echo 'Deploying with Helm...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
