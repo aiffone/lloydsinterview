@@ -7,8 +7,13 @@ resource "google_container_cluster" "primary" {
 
   initial_node_count = 0  # Set to 0 as we are using a custom node pool
 
-  # Optional: Enable basic GKE features
-  enable_ip_alias = true
+  # Configure IP allocation policy for IP aliasing
+  ip_allocation_policy {
+    use_ip_aliases = true
+    cluster_ipv4_cidr_block = "10.0.0.0/14" # Example CIDR block for cluster IPs
+    services_ipv4_cidr_block = "10.0.4.0/20" # Example CIDR block for service IPs
+  }
+
   remove_default_node_pool = true  # We are creating our own node pool
 }
 
