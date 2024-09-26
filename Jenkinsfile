@@ -63,7 +63,7 @@ pipeline {
                 script {
                     echo 'Authenticating with Google Cloud...'
                     
-                    // Authenticate using the service account
+                    // Authenticate using the service account 
                     withCredentials([file(credentialsId: 'gcr-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                         sh 'gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet'
