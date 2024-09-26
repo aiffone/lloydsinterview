@@ -7,14 +7,14 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/hello-world:latest']
 
-  # Step 3: Set up GKE authentication.
+  # Step 3: Set up GKE authentication for the region.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
-        echo "Authenticating with GKE..."
-        gcloud container clusters get-credentials infra1-gke-cluster --zone europe-west1-b --project $PROJECT_ID
+        echo "Authenticating with GKE in the region..."
+        gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project $PROJECT_ID
 
   # Step 4: Deploy the image to GKE using Helm.
   - name: 'alpine/helm'
@@ -27,7 +27,7 @@ steps:
         --set image.repository=gcr.io/$PROJECT_ID/hello-world \
         --set image.tag=latest
     env:
-      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
+      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
 
 # Optional: Set the service account if necessary for specific permissions.
