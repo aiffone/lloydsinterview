@@ -11,13 +11,13 @@ variable "project_id" {
 
 variable "region" {
   description = "The region to deploy to"
-  default     = "us-central1"
+  default     = "europe-west1"
 }
 
-variable "cluster_name" {
-  description = "The name of the GKE cluster"
-  default     = "infra1-gke-cluster"
-}
+# variable "cluster_name" {
+#   description = "The name of the GKE cluster"
+#   default     = "infra1-gke-cluster"
+# }
 
 variable "network_name" {
   description = "The name of the VPC network"
