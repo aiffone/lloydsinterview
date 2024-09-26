@@ -58,7 +58,7 @@ pipeline {
                 script {
                     echo 'Checking deployment status...'
                     // Wait for the rollout to complete
-                    sh 'kubectl rollout status deployment/hello-world -n microservices'
+                    sh 'kubectl rollout status deployment/hello-world -n microservices || exit 1'
                 }
             }
         }

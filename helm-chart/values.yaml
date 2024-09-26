@@ -8,7 +8,7 @@ replicas: 2
 
 # Image settings
 image:
-  repository: europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world  # Updated image reference
+  repository: europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world
   tag: latest
 
 # Container port
