@@ -42,7 +42,7 @@ pipeline {
             steps {
                 script {
                     echo 'Pulling Hello World image from Docker Hub...'
-                    // Pull the hello-world image from Docker Hub
+                    // Pull the hello-world image from Docker Hub 
                     sh 'docker pull hello-world'
                 }
             }
