@@ -74,7 +74,7 @@ pipeline {
             }
         }
 
-        stage('Deploy with Helm') {
+        stage('Clean Up Existing Helm Releases') {
             steps {
                 script {
                     echo 'Authenticating with GKE...'
@@ -83,20 +83,23 @@ pipeline {
                         sh 'gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project infra1-430721'
                     }
 
-                    echo 'Cleaning up conflicting Helm releases (if any)...'
+                    echo 'Deleting all existing Helm releases in the "microservices" namespace...'
+                    // This command will delete all Helm releases in the specified namespace
                     sh '''
-                        if helm status hello-world --namespace microservices > /dev/null 2>&1; then
-                            echo "Old release found in microservices namespace, deleting..."
-                            helm delete hello-world --namespace microservices
-                        else
-                            echo "No conflicting release found in microservices namespace."
-                        fi
+                        helm list --namespace microservices -q | xargs -r helm delete --namespace microservices
                     '''
+                }
+            }
+        }
 
+        stage('Deploy with Helm') {
+            steps {
+                script {
                     echo 'Deploying application with Helm...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace microservices \
+                        --create-namespace \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest
                     '''
