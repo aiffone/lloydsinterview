@@ -7,14 +7,18 @@ resource "google_container_cluster" "primary" {
 
   initial_node_count = 0  # Set to 0 as we are using a custom node pool
 
-
+  # Add necessary configurations if needed (optional)
+  # enable_legacy_abac = false  # Optional: Disables legacy ABAC
+  # remove default node pool if you want to manage it entirely
+}
 
 resource "google_container_node_pool" "primary_nodes" {
   cluster    = google_container_cluster.primary.name
   location   = google_container_cluster.primary.location
   name       = "${var.cluster_name}-node-pool"
   
-  node_count = 2  # Start with 2 nodes
+  # node_count is not needed when using autoscaling
+  # node_count = 2  # Start with 2 nodes (remove this line)
 
   # Enable autoscaling
   autoscaling {
