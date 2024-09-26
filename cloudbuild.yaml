@@ -1,29 +1,37 @@
 steps:
-  # Step 1: Build the Docker image
+  # Step 1: Build the Docker image from the Dockerfile in the root directory.
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/hello-world:latest', '.']
 
-  # Step 2: Push the Docker image to Google Container Registry (GCR)
+  # Step 2: Push the Docker image to Google Container Registry (GCR).
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/hello-world:latest']
 
-  # Step 3: Deploy to GKE using Helm
+  # Step 3: Set up GKE authentication.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        echo "Authenticating with GKE..."
+        gcloud container clusters get-credentials infra1-gke-cluster --zone europe-west1-b --project $PROJECT_ID
+
+  # Step 4: Deploy the image to GKE using Helm.
   - name: 'alpine/helm'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
+        echo "Deploying to GKE with Helm..."
         helm upgrade --install hello-world ./helm-chart \
         --set image.repository=gcr.io/$PROJECT_ID/hello-world \
         --set image.tag=latest
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
-      - 'PRIVATE_KEY=$$PRIVATE_KEY'
-      - 'PUBLIC_KEY=$$PUBLIC_KEY'
 
-# Optional: Set the service account (if needed)
+# Optional: Set the service account if necessary for specific permissions.
 serviceAccount: "jenkins@infra1-430721.iam.gserviceaccount.com"
 
-# Specify logs bucket for Cloud Build logs
-logsBucket: "gs://cloudbuild-logs-00111"  # Replace with your actual bucket name
+# Specify logs bucket for Cloud Build logs.
+logsBucket: "gs://cloudbuild-logs-00111"  # Replace with your actual bucket name.
