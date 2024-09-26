@@ -34,7 +34,7 @@ pipeline {
                     echo 'Setting up Python virtual environment...'
                     sh '''
                         python3 -m venv venv
-                        source venv/bin/activate  # Use source for portability
+                        . venv/bin/activate  # Use . instead of source for compatibility
                         pip install Flask
                     '''
                 }
