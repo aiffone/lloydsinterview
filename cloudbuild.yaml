@@ -8,7 +8,7 @@ steps:
     args: ['push', 'gcr.io/$PROJECT_ID/hello-world:latest']
 
   # Step 3: Set up GKE authentication for the region.
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image
     entrypoint: 'sh'
     args:
       - '-c'
@@ -16,12 +16,14 @@ steps:
         echo "Authenticating with GKE in the region..."
         gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project $PROJECT_ID
 
-  # Step 4: Deploy the image to GKE using Helm.
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Switch to cloud-sdk image
+  # Step 4: Install Helm and Deploy to GKE using Helm.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image and install Helm manually
     entrypoint: 'sh'
     args:
       - '-c'
       - |
+        echo "Installing Helm..."
+        curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         echo "Deploying to GKE with Helm..."
         helm upgrade --install hello-world ./helm-chart \
         --set image.repository=gcr.io/$PROJECT_ID/hello-world \
