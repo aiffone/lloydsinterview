@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     triggers {
-        // Trigger the pipeline every time there is a push to the repository
+        // Trigger the pipeline on every push to the repository
         githubPush()
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from the repository
+                echo 'Checking out code from Git repository...'
                 git url: 'https://github.com/aiffone/lloydsinterview.git', credentialsId: 'github-pat'
             }
         }
@@ -18,8 +18,12 @@ pipeline {
             steps {
                 script {
                     echo 'Checking Python installation...'
-                    // Check Python versions
-                    sh 'python --version || python3 --version'
+                    sh '''
+                        if ! python --version 2>/dev/null; then
+                            echo "Python 2 not found, checking Python 3..."
+                            python3 --version
+                        fi
+                    '''
                 }
             }
         }
@@ -28,10 +32,9 @@ pipeline {
             steps {
                 script {
                     echo 'Setting up Python virtual environment...'
-                    // Create a virtual environment and install Flask using python3
                     sh '''
                         python3 -m venv venv
-                        . venv/bin/activate  # Activate the virtual environment
+                        source venv/bin/activate  # Use source for portability
                         pip install Flask
                     '''
                 }
@@ -42,7 +45,6 @@ pipeline {
             steps {
                 script {
                     echo 'Pulling Hello World image from Docker Hub...'
-                    // Pull the hello-world image from Docker Hub 
                     sh 'docker pull hello-world'
                 }
             }
@@ -52,7 +54,6 @@ pipeline {
             steps {
                 script {
                     echo 'Tagging the Hello World image...'
-                    // Tag the pulled image for GCR
                     sh 'docker tag hello-world europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest'
                 }
             }
@@ -62,13 +63,11 @@ pipeline {
             steps {
                 script {
                     echo 'Authenticating with Google Cloud...'
-                    
-                    // Authenticate using the service account 
                     withCredentials([file(credentialsId: 'gcr-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                         sh 'gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet'
                     }
-                    
+
                     echo 'Pushing Docker image to Artifact Registry...'
                     sh 'docker push europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest'
                 }
@@ -79,35 +78,56 @@ pipeline {
             steps {
                 script {
                     echo 'Authenticating with GKE...'
-                    
-                    // Authenticate using the GKE service account
                     withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                        
-                        // Get credentials for the GKE cluster
                         sh 'gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project infra1-430721'
                     }
 
-                    echo 'Cleaning up conflicting Helm releases...'
-                    // Attempt to clean up any existing release in conflicting namespace if present
+                    echo 'Cleaning up conflicting Helm releases (if any)...'
                     sh '''
-                        if helm status hello-world --namespace pythonmicro > /dev/null 2>&1; then
-                            echo "Deleting old release in pythonmicro namespace..."
-                            helm delete hello-world --namespace pythonmicro || true
+                        if helm status hello-world --namespace microservices > /dev/null 2>&1; then
+                            echo "Old release found in microservices namespace, deleting..."
+                            helm delete hello-world --namespace microservices
                         else
-                            echo "No conflicting release found in pythonmicro namespace."
+                            echo "No conflicting release found in microservices namespace."
                         fi
                     '''
 
-                    echo 'Deploying with Helm...'
+                    echo 'Deploying application with Helm...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace microservices \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest
                     '''
+
+                    echo 'Checking deployment status...'
+                    sh 'kubectl rollout status deployment/hello-world -n microservices'
                 }
             }
+        }
+
+        stage('Post Deployment Checks') {
+            steps {
+                script {
+                    echo 'Verifying deployment...'
+                    sh 'kubectl get pods -n microservices'
+                    sh 'kubectl get svc -n microservices'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs for more details.'
         }
     }
 }
