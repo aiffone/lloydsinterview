@@ -8,7 +8,7 @@ resource "google_container_cluster" "primary" {
   initial_node_count = 1
 
   node_config {
-    machine_type = "e2-micro"
+    machine_type = "e2-medium" # Increased from e2-micro to e2-medium
     disk_size_gb = 50
 
     oauth_scopes = [
