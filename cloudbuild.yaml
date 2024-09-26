@@ -20,19 +20,19 @@ steps:
     dir: './'  # Directory where your Terraform files are located
     waitFor: ['Terraform Init']
 
-  # Step 4: Plan the Terraform deployment (can add -target if needed to limit scope)
+  # Step 4: Plan the Terraform deployment with -refresh-only to prevent recreation of existing resources
   - name: 'hashicorp/terraform:1.5.3'
     id: 'Terraform Plan'
     entrypoint: 'sh'
-    args: ['-c', 'terraform plan -out=tfplan']
+    args: ['-c', 'terraform plan -out=tfplan -refresh-only']
     dir: './'  # Directory where your Terraform files are located
     waitFor: ['Terraform Validate']
 
-  # Step 5: Apply the Terraform configuration (will only apply planned changes)
+  # Step 5: Apply the Terraform configuration (will only refresh the state without recreating existing resources)
   - name: 'hashicorp/terraform:1.5.3'
     id: 'Terraform Apply'
     entrypoint: 'sh'
-    args: ['-c', 'terraform apply -auto-approve tfplan']
+    args: ['-c', 'terraform apply -auto-approve -refresh-only tfplan']
     dir: './'  # Directory where your Terraform files are located
     waitFor: ['Terraform Plan']
 
