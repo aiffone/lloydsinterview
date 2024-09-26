@@ -1,7 +1,8 @@
+# deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}  # Set deployment name to match Helm release name
+  name: {{ .Release.Name }}  # This will result in "hello-world" when the Helm release is named "hello-world"
   namespace: {{ .Values.namespace }}  # Use the namespace value from values.yaml
 spec:
   replicas: {{ .Values.replicas }}  # Use replicas value from values.yaml

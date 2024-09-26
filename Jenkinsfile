@@ -57,6 +57,12 @@ pipeline {
             steps {
                 script {
                     echo 'Checking deployment status...'
+                    // Adding a short delay to ensure Kubernetes registers the deployment before checking status
+                    sleep(time: 10, unit: "SECONDS")
+
+                    // Check if the deployment exists and its status
+                    sh 'kubectl get deployments -n microservices'
+
                     // Wait for the rollout to complete
                     sh 'kubectl rollout status deployment/hello-world -n microservices || exit 1'
                 }
