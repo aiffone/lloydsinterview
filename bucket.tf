@@ -39,3 +39,24 @@ resource "google_storage_bucket" "cloudbuild_logs" {
 
   uniform_bucket_level_access = true
 }
+
+
+# Test Bucket
+resource "google_storage_bucket" "test" {
+  name     = "test--infra011101"
+  location = "US"
+
+  versioning {
+    enabled = true
+  }
+
+  lifecycle_rule {
+    action {
+      type = "Delete"
+    }
+
+    condition {
+      age = 365
+    }
+  }
+}
