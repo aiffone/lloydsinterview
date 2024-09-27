@@ -22,8 +22,8 @@ steps:
     args:
       - '-c'
       - |
-        echo "Creating namespace 'pythonmicro' if it doesn't exist..."
-        kubectl get namespace pythonmicro || kubectl create namespace pythonmicro
+        echo "Creating namespace 'microservices' if it doesn't exist..."
+        kubectl get namespace microservices || kubectl create namespace microservices
 
   # Step 5: Deploy the image to GKE using Helm in the specified namespace.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image
@@ -33,11 +33,11 @@ steps:
       - |
         echo "Installing Helm..."
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-        echo "Deploying to GKE with Helm in the 'pythonmicro' namespace..."
+        echo "Deploying to GKE with Helm in the 'microservices' namespace..."
         helm upgrade --install hello-world ./helm-chart \
         --set image.repository=gcr.io/$PROJECT_ID/hello-world \
         --set image.tag=latest \
-        --namespace pythonmicro \
+        --namespace microservices \
         --create-namespace
     env:
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'

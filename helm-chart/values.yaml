@@ -1,7 +1,7 @@
 # values.yaml
 
 # Namespace to deploy into
-namespace: pythonmicro
+namespace: microservices
 
 # Number of replicas
 replicas: 2
