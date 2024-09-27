@@ -1,4 +1,15 @@
-apiVersion: v2
-name: hello-world
-description: A Helm chart for deploying Hello World app
-version: 0.1.0
+# values.yaml
+
+# Namespace to deploy into
+namespace: pythonmicro
+
+# Number of replicas
+replicas: 2
+
+# Image settings
+image:
+  repository: europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world  # Updated image reference
+  tag: latest
+
+# Container port
+containerPort: 8080

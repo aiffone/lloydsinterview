@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     echo 'Creating namespace if not exists...'
-                    sh 'kubectl create namespace microservices || echo "Namespace already exists"'
+                    sh 'kubectl create namespace pythonmicro || echo "Namespace already exists"'
                 }
             }
         }
@@ -41,13 +41,13 @@ pipeline {
                     echo 'Deploying Hello World application with Helm...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
-                        --namespace microservices \
+                        --namespace pythonmicro \
                         --create-namespace \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest \
                         --debug
                     '''
-                    sh 'kubectl get deployments -n microservices'  // Verify deployment
+                    sh 'kubectl get deployments -n pythonmicro'  // Verify deployment
                 }
             }
         }
@@ -57,8 +57,8 @@ pipeline {
             steps {
                 script {
                     echo 'Verifying deployment...'
-                    sh 'kubectl get pods -n microservices || exit 1'
-                    sh 'kubectl get svc -n microservices || exit 1'
+                    sh 'kubectl get pods -n pythonmicro || exit 1'
+                    sh 'kubectl get svc -n pythonmicro || exit 1'
                 }
             }
         }
