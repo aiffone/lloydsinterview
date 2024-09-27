@@ -29,8 +29,17 @@ pipeline {
         stage('Create pythonmicro Namespace') {
             steps {
                 script {
-                    echo 'Creating pythonmicro namespace if it does not exist...'
+                    echo 'Creating the pythonmicro namespace if it does not exist...'
                     sh 'kubectl create namespace pythonmicro || echo "Namespace pythonmicro already exists."'
+                }
+            }
+        }
+
+        stage('Delete Existing Helm Release') {
+            steps {
+                script {
+                    echo 'Checking and deleting any existing Helm release for hello-world in pythonmicro namespace...'
+                    sh 'helm list -n pythonmicro --short | grep hello-world && helm delete hello-world -n pythonmicro || echo "No existing hello-world release found."'
                 }
             }
         }
@@ -38,11 +47,10 @@ pipeline {
         stage('Deploy with Helm to pythonmicro Namespace') {
             steps {
                 script {
-                    echo 'Deploying application with Helm to the pythonmicro namespace...'
+                    echo 'Deploying Hello World application with Helm to the pythonmicro namespace...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace pythonmicro \
-                        --create-namespace \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest \
                         --debug
