@@ -1,35 +1,45 @@
+# GKE Cluster and Node Pool Configuration
+
+# Define the GKE Cluster
 resource "google_container_cluster" "primary" {
   name     = var.cluster_name
   location = var.region
 
+  # Define the network and subnetwork for the cluster
   network    = google_compute_network.vpc_network.id
   subnetwork = google_compute_subnetwork.vpc_subnetwork.id
 
-  initial_node_count =  2 # Set to 0 as we are using a custom node pool
+  # Initial node count set to 0 because we're using a custom node pool below.
+  initial_node_count = 1
 
-  # Add necessary configurations if needed (optional)
-  # enable_legacy_abac = false  # Optional: Disables legacy ABAC
-  # remove default node pool if you want to manage it entirely
-}
-
-resource "google_container_node_pool" "primary_nodes" {
-  cluster    = google_container_cluster.primary.name
-  location   = google_container_cluster.primary.location
-  name       = "${var.cluster_name}-node-pool"
-  
-  # node_count is not needed when using autoscaling
-  # node_count = 2  # Start with 2 nodes (remove this line)
-
-  # Enable autoscaling
-  autoscaling {
-    min_node_count = 2
-    max_node_count = 4
+  # Optional: Specify the node configuration to use standard disks instead of SSDs
+  node_config {
+    machine_type = "e2-medium"  # Select the appropriate machine type
+    disk_size_gb = 10
+    disk_type    = "pd-standard"  # Use standard persistent disk to reduce SSD quota usage
   }
 
-  node_config {
-    machine_type = "e2-medium"  # Increased from e2-micro to e2-medium
-    disk_size_gb = 50
+  # Remove the default node pool, as we are defining our custom node pool below
+  remove_default_node_pool = true
+}
 
+# Define a custom node pool for the GKE cluster
+resource "google_container_node_pool" "primary_nodes" {
+  cluster  = google_container_cluster.primary.name  # Reference the primary GKE cluster
+  location = google_container_cluster.primary.location
+  name     = "${var.cluster_name}-node-pool"
+
+  # Enable autoscaling for the node pool
+  autoscaling {
+    min_node_count = 1
+    max_node_count = 2
+  }
+
+  # Node configuration for the custom node pool
+  node_config {
+    machine_type = "e2-medium"
+    disk_size_gb = 10
+    disk_type    = "pd-standard"  # Use standard persistent disk to avoid SSD quota issue
     oauth_scopes = [
       "https://www.googleapis.com/auth/devstorage.read_only",
       "https://www.googleapis.com/auth/logging.write",
