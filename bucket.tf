@@ -42,7 +42,7 @@ resource "google_storage_bucket" "cloudbuild_logs" {
 
 
 # Test Bucket
-resource "google_storage_bucket" "test" {
+resource "google_storage_bucket" "test--infra011101" {
   name     = "test--infra011101"
   location = "US"
 
