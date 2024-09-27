@@ -14,7 +14,7 @@ steps:
       - '-c'
       - |
         echo "Authenticating with GKE in the region..."
-        gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project $PROJECT_ID
+        gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project $PROJECT_ID
 
   # Step 4: Create the new namespace if it doesn't exist.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -40,7 +40,7 @@ steps:
         --namespace pythonmicro \
         --create-namespace
     env:
-      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
 
 # Optional: Set the service account if necessary for specific permissions.
