@@ -26,19 +26,29 @@ pipeline {
             }
         }
 
-        stage('Create Namespace') {
+        stage('Delete microservices Namespace') {
             steps {
                 script {
-                    echo 'Creating namespace if not exists...'
-                    sh 'kubectl create namespace pythonmicro || echo "Namespace already exists"'
+                    echo 'Deleting the entire microservices namespace to remove conflicting resources...'
+                    // Delete the entire namespace to remove all resources and avoid conflicts
+                    sh 'kubectl delete namespace microservices || echo "Namespace microservices not found or already deleted."'
                 }
             }
         }
 
-        stage('Deploy with Helm') {
+        stage('Create pythonmicro Namespace') {
             steps {
                 script {
-                    echo 'Deploying Hello World application with Helm...'
+                    echo 'Creating a fresh pythonmicro namespace...'
+                    sh 'kubectl create namespace pythonmicro || echo "Namespace pythonmicro already exists."'
+                }
+            }
+        }
+
+        stage('Deploy with Helm to pythonmicro Namespace') {
+            steps {
+                script {
+                    echo 'Deploying Hello World application with Helm to the pythonmicro namespace...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace pythonmicro \
@@ -47,16 +57,15 @@ pipeline {
                         --set image.tag=latest \
                         --debug
                     '''
-                    sh 'kubectl get deployments -n pythonmicro'  // Verify deployment
+                    sh 'kubectl get deployments -n pythonmicro'  // Verify deployment in the new namespace
                 }
             }
         }
 
-
         stage('Post Deployment Checks') {
             steps {
                 script {
-                    echo 'Verifying deployment...'
+                    echo 'Verifying deployment in pythonmicro namespace...'
                     sh 'kubectl get pods -n pythonmicro || exit 1'
                     sh 'kubectl get svc -n pythonmicro || exit 1'
                 }
