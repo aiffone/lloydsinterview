@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     echo 'Checking and deleting any existing Helm release for hello-world in pythonmicro namespace...'
-                    sh 'helm list -n pythonmicro --short | grep hello-world && helm delete hello-world -n pythonmicro || echo "No existing hello-world release found."'
+                    sh 'helm list -n microservices --short | grep hello-world && helm delete hello-world -n pythonmicro || echo "No existing hello-world release found."'
                 }
             }
         }
