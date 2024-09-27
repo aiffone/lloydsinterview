@@ -44,10 +44,10 @@ pipeline {
                     echo 'Deploying Hello World application with Helm...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
-                        --namespace microservices \
+                        --namespace microservices \  # Ensure this is set to microservices
                         --create-namespace \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
-                        --set image.tag=latest || exit 1
+                        --set image.tag=latest
                     '''
                 }
             }
