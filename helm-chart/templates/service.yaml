@@ -9,4 +9,4 @@ spec:
     app: {{ .Release.Name }}  # Selector to match the deployment
   ports:
     - port: 80  # Port that the service exposes
-      targetPort: {{ .Values.containerPort | default 8081 }}  # Port on the pod that the service will forward to
+      targetPort: {{ .Values.containerPort }}  # Port on the pod that the service will forward to
