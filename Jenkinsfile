@@ -40,7 +40,7 @@ pipeline {
                 script {
                     echo 'Building Docker image...'
                     sh '''
-                        docker build -t europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest .
+                        docker build -t us-central1-docker.pkg.dev/infra1-430721/ngnx:latest .
                     '''
                 }
             }
@@ -51,7 +51,7 @@ pipeline {
                 script {
                     echo 'Pushing Docker image to repository...'
                     sh '''
-                        docker push europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest
+                        docker push us-central1-docker.pkg.dev/infra1-430721/ngnx:latest
                     '''
                 }
             }
@@ -64,7 +64,7 @@ pipeline {
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace microservices \
-                        --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
+                        --set image.repository=us-central1-docker.pkg.dev/infra1-430721/ngnx \
                         --set image.tag=latest \
                         --debug
                     '''
