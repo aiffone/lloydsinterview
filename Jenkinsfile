@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        // Trigger the pipeline on every push to the repository
+        // Trigger the pipeline on every push to the repository 
         githubPush()
     }
 
