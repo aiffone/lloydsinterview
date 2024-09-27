@@ -20,7 +20,7 @@ pipeline {
                     echo 'Authenticating with Google Cloud and GKE...'
                     withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                        sh 'gcloud container clusters get-credentials infra1-gke-cluster --region europe-west1 --project infra1-430721'
+                        sh 'gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project infra1-430721'
                     }
                 }
             }
@@ -32,7 +32,7 @@ pipeline {
                     echo 'Deleting all existing Helm releases in the "microservices" namespace...'
                     // Delete all existing Helm releases in the specified namespace
                     sh '''
-                        helm list --namespace microservices -q | xargs -r helm delete --namespace microservices
+                        helm list --namespace microservices -q | xargs -r helm delete --namespace microservices || echo "No releases to delete."
                     '''
                 }
             }
@@ -47,7 +47,7 @@ pipeline {
                         --namespace microservices \
                         --create-namespace \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
-                        --set image.tag=latest
+                        --set image.tag=latest || exit 1
                     '''
                 }
             }
@@ -58,10 +58,10 @@ pipeline {
                 script {
                     echo 'Checking deployment status...'
                     // Adding a short delay to ensure Kubernetes registers the deployment before checking status
-                    sleep(time: 10, unit: "SECONDS")
+                    sleep(time: 15, unit: "SECONDS")  // Adjust the wait time as necessary
 
                     // Check if the deployment exists and its status
-                    sh 'kubectl get deployments -n microservices'
+                    sh 'kubectl get deployments -n microservices || exit 1'
 
                     // Wait for the rollout to complete
                     sh 'kubectl rollout status deployment/hello-world -n microservices || exit 1'
@@ -73,8 +73,8 @@ pipeline {
             steps {
                 script {
                     echo 'Verifying deployment...'
-                    sh 'kubectl get pods -n microservices'
-                    sh 'kubectl get svc -n microservices'
+                    sh 'kubectl get pods -n microservices || exit 1'
+                    sh 'kubectl get svc -n microservices || exit 1'
                 }
             }
         }
