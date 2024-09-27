@@ -19,7 +19,7 @@ resource "google_container_cluster" "primary" {
     disk_type    = "pd-standard"  # Use standard persistent disk to reduce SSD quota usage
   }
 
-  # Remove the default node pool, as we are defining our custom node pool below
+  # Remove the default node pool, as we are defining our custom node pool below 
   remove_default_node_pool = true
 }
 
