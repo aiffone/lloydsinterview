@@ -18,12 +18,11 @@ pipeline {
             steps {
                 script {
                     echo 'Authenticating with Google Cloud and GKE...'
-                    // Authenticate using the service account email directly
-                    sh '''
-                        gcloud auth activate-service-account jenkins@infra1-430721.iam.gserviceaccount.com --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-                        gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project infra1-430721
-                        gcloud auth configure-docker us-central1-docker.pkg.dev  // Configure Docker to authenticate with Artifact Registry
-                    '''
+                    withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+                        sh 'gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project infra1-430721'
+                        sh 'gcloud auth configure-docker us-central1-docker.pkg.dev'  // Configure Docker to authenticate with Artifact Registry
+                    }
                 }
             }
         }
