@@ -9,7 +9,12 @@ steps:
   - name: 'hashicorp/terraform:1.5.3'
     id: 'Terraform Init'
     entrypoint: 'sh'
-    args: ['-c', 'terraform init']
+    args:
+       - '-c'
+       - | 
+        terraform init -backend-config="bucket=$_TF_STATE_BUCKET_NAME" -backend-config="prefix=terraform/state"
+  # - timeout: "600s"
+    
     dir: './'  # Directory where your Terraform files are located
 
   # Step 3: Validate the Terraform configuration
