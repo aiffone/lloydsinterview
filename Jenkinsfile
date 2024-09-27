@@ -52,16 +52,6 @@ pipeline {
             }
         }
 
-        stage('Verify Deployment Status') {
-            steps {
-                script {
-                    echo 'Checking deployment status...'
-                    sleep(time: 15, unit: "SECONDS")  // Adjust the wait time as necessary
-                    sh 'kubectl get deployments -n microservices || exit 1'
-                    sh 'kubectl rollout status deployment/hello-world -n microservices || exit 1'
-                }
-            }
-        }
 
         stage('Post Deployment Checks') {
             steps {
