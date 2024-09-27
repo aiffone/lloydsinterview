@@ -30,7 +30,7 @@ pipeline {
         stage('Create Namespace') {
             steps {
                 script {
-                    echo 'Creating namespace if not exists...'
+                    echo 'Creating namespace if it does not exist...'
                     sh 'kubectl create namespace microservices || echo "Namespace already exists"'
                 }
             }
@@ -40,9 +40,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    sh '''
-                        docker build -t us-central1-docker.pkg.dev/infra1-430721/nginx:latest .
-                    '''
+                    sh 'docker build -t us-central1-docker.pkg.dev/infra1-430721/nginx/nginx-image:latest .'  // Use a more explicit image name format
                 }
             }
         }
@@ -51,9 +49,7 @@ pipeline {
             steps {
                 script {
                     echo 'Pushing Docker image to repository...'
-                    sh '''
-                        docker push us-central1-docker.pkg.dev/infra1-430721/nginx:latest
-                    '''
+                    sh 'docker push us-central1-docker.pkg.dev/infra1-430721/nginx/nginx-image:latest'
                 }
             }
         }
@@ -65,7 +61,7 @@ pipeline {
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace microservices \
-                        --set image.repository=us-central1-docker.pkg.dev/infra1-430721/nginx \
+                        --set image.repository=us-central1-docker.pkg.dev/infra1-430721/nginx/nginx-image \
                         --set image.tag=latest \
                         --debug
                     '''
