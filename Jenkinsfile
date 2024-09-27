@@ -35,6 +35,28 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo 'Building Docker image...'
+                    sh '''
+                        docker build -t europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest .
+                    '''
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    echo 'Pushing Docker image to repository...'
+                    sh '''
+                        docker push europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world:latest
+                    '''
+                }
+            }
+        }
+
         stage('Deploy with Helm') {
             steps {
                 script {
@@ -42,7 +64,6 @@ pipeline {
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace microservices \
-                        --create-namespace \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest \
                         --debug
@@ -51,7 +72,6 @@ pipeline {
                 }
             }
         }
-
 
         stage('Post Deployment Checks') {
             steps {

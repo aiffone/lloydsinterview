@@ -1,0 +1,13 @@
+# Namespace to deploy into
+namespace: pythonmicro
+
+# Number of replicas
+replicas: 2
+
+# Image settings
+image:
+  repository: nginx
+  tag: latest
+
+# Container port
+containerPort: 80

@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}-service  # Name of the service, based on the release name
   namespace: {{ .Values.namespace }}  # Use the namespace value from values.yaml
 spec:
-  type: LoadBalancer  # Changed from ClusterIP to LoadBalancer for external access
+  type: LoadBalancer  # Expose the service externally
   selector:
     app: {{ .Release.Name }}  # Selector to match the deployment
   ports:
