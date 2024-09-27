@@ -26,25 +26,13 @@ pipeline {
             }
         }
 
-        stage('Clean Up Existing Helm Releases') {
-            steps {
-                script {
-                    echo 'Deleting all existing Helm releases in the "microservices" namespace...'
-                    // Delete all existing Helm releases in the specified namespace
-                    sh '''
-                        helm list --namespace microservices -q | xargs -r helm delete --namespace microservices || echo "No releases to delete."
-                    '''
-                }
-            }
-        }
-
         stage('Deploy with Helm') {
             steps {
                 script {
                     echo 'Deploying Hello World application with Helm...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
-                        --namespace microservices \  # Ensure this is set to microservices
+                        --namespace microservices \
                         --create-namespace \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest
