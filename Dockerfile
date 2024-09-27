@@ -5,17 +5,18 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy requirements.txt to the working directory
-COPY requirements.txt ./
+COPY app/requirements.txt ./
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN pip install --upgrade Flask
+
 # Copy the entire app directory into /app in the container
 COPY app/app.py /app/
-# Directly copy the app directory
 
 # Expose port 8080 for the app
 EXPOSE 8080
 
-# Command to run the app
-CMD ["python3", "app.py"]  # This assumes app.py is directly in /app
+# Command to run the app and keep the container alive for 5 minutes
+CMD ["sh", "-c", "python3 app.py & sleep 300"]
