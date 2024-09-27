@@ -26,20 +26,10 @@ pipeline {
             }
         }
 
-        stage('Delete microservices Namespace') {
-            steps {
-                script {
-                    echo 'Deleting the entire microservices namespace to remove conflicting resources...'
-                    // Delete the entire namespace to remove all resources and avoid conflicts
-                    sh 'kubectl delete namespace microservices || echo "Namespace microservices not found or already deleted."'
-                }
-            }
-        }
-
         stage('Create pythonmicro Namespace') {
             steps {
                 script {
-                    echo 'Creating a fresh pythonmicro namespace...'
+                    echo 'Creating pythonmicro namespace if it does not exist...'
                     sh 'kubectl create namespace pythonmicro || echo "Namespace pythonmicro already exists."'
                 }
             }
@@ -48,7 +38,7 @@ pipeline {
         stage('Deploy with Helm to pythonmicro Namespace') {
             steps {
                 script {
-                    echo 'Deploying Hello World application with Helm to the pythonmicro namespace...'
+                    echo 'Deploying application with Helm to the pythonmicro namespace...'
                     sh '''
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace pythonmicro \
