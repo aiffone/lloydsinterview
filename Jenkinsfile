@@ -26,6 +26,15 @@ pipeline {
             }
         }
 
+        stage('Create Namespace') {
+            steps {
+                script {
+                    echo 'Creating namespace if not exists...'
+                    sh 'kubectl create namespace microservices || echo "Namespace already exists"'
+                }
+            }
+        }
+
         stage('Deploy with Helm') {
             steps {
                 script {
@@ -35,8 +44,10 @@ pipeline {
                         --namespace microservices \
                         --create-namespace \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
-                        --set image.tag=latest
+                        --set image.tag=latest \
+                        --debug
                     '''
+                    sh 'kubectl get deployments -n microservices'  // Verify deployment
                 }
             }
         }
@@ -45,13 +56,8 @@ pipeline {
             steps {
                 script {
                     echo 'Checking deployment status...'
-                    // Adding a short delay to ensure Kubernetes registers the deployment before checking status
                     sleep(time: 15, unit: "SECONDS")  // Adjust the wait time as necessary
-
-                    // Check if the deployment exists and its status
                     sh 'kubectl get deployments -n microservices || exit 1'
-
-                    // Wait for the rollout to complete
                     sh 'kubectl rollout status deployment/hello-world -n microservices || exit 1'
                 }
             }
