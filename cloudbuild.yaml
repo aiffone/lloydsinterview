@@ -20,15 +20,15 @@ steps:
     dir: './'  # Directory where your Terraform files are located
     waitFor: ['Terraform Init']
 
-  # Step 4: Plan the Terraform deployment
+  # Step 4: Plan the Terraform deployment with targeting
   - name: 'hashicorp/terraform:1.5.3'
     id: 'Terraform Plan'
     entrypoint: 'sh'
-    args: ['-c', 'terraform plan -out=tfplan']
+    args: ['-c', 'terraform plan -out=tfplan -target=module.new_resource']
     dir: './'  # Directory where your Terraform files are located
     waitFor: ['Terraform Validate']
 
-  # Step 5: Apply the Terraform configuration (will create/update infrastructure based on the plan)
+  # Step 5: Apply the Terraform configuration (will only create new resources defined in the target)
   - name: 'hashicorp/terraform:1.5.3'
     id: 'Terraform Apply'
     entrypoint: 'sh'
