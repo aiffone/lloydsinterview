@@ -2,61 +2,35 @@ pipeline {
     agent any
 
     triggers {
-        // Trigger the pipeline on every push to the repository
         githubPush()
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code from Git repository...'
                 git url: 'https://github.com/aiffone/lloydsinterview.git', credentialsId: 'github-pat'
             }
         }
 
         stage('Authenticate with GKE') {
             steps {
-                script {
-                    echo 'Authenticating with Google Cloud and GKE...'
-                    withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                        sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                        sh 'gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project infra1-430721'
-                    }
+                withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+                    sh 'gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project infra1-430721'
                 }
             }
         }
 
-        stage('Create pythonmicro Namespace') {
+        stage('Deploy with Helm') {
             steps {
                 script {
-                    echo 'Creating the pythonmicro namespace if it does not exist...'
-                    sh 'kubectl create namespace pythonmicro || echo "Namespace pythonmicro already exists."'
-                }
-            }
-        }
-
-        stage('Deploy with Helm to pythonmicro Namespace') {
-            steps {
-                script {
-                    echo 'Deploying Hello World application with Helm to the pythonmicro namespace using hello-world-jenkins chart...'
-
-                    // Debug commands to check the current directory and list contents
-                    sh 'echo "Current working directory:" && pwd'
-                    sh 'echo "Listing contents of the current directory:" && ls -la'
-                    sh 'echo "Listing contents of hello-world-jenkins directory:" && ls -la hello-world-jenkins'
-                    sh git clone https://github.com/aiffone/lloydsinterview.git
-                    // Use cd to switch to the correct directory for the Helm chart
                     sh '''
                         cd hello-world-jenkins
                         helm upgrade --install hello-world-jenkins . \
                         --namespace pythonmicro \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
-                        --set image.tag=latest \
-                        --debug
+                        --set image.tag=latest
                     '''
-
-                    // Verify that the deployment has been created in the namespace
-                    sh 'kubectl get deployments -n pythonmicro'
                 }
             }
         }
@@ -64,9 +38,8 @@ pipeline {
         stage('Post Deployment Checks') {
             steps {
                 script {
-                    echo 'Verifying deployment in pythonmicro namespace...'
-                    sh 'kubectl get pods -n pythonmicro || exit 1'
-                    sh 'kubectl get svc -n pythonmicro || exit 1'
+                    sh 'kubectl get pods -n pythonmicro'
+                    sh 'kubectl get svc -n pythonmicro'
                 }
             }
         }
@@ -74,14 +47,13 @@ pipeline {
 
     post {
         always {
-            echo 'Cleaning up workspace...'
             cleanWs()
         }
         success {
-            echo 'Pipeline completed successfully!'
+            echo 'Deployment successful!'
         }
         failure {
-            echo 'Pipeline failed. Please check the logs for more details.'
+            echo 'Deployment failed. Check the logs for details.'
         }
     }
 }
