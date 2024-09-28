@@ -40,13 +40,13 @@ pipeline {
                 script {
                     echo 'Deploying Hello World application with Helm to the pythonmicro namespace using hello-world-jenkins chart...'
 
-                    // Add debug commands to check the current directory and list contents
+                    // Debug commands to check the current directory and list contents
                     sh 'echo "Current working directory:" && pwd'
                     sh 'echo "Listing contents of the current directory:" && ls -la'
-                    sh 'echo "Listing contents of hello-world-jenkins directory:" && ls -la hello-world-jenkins'
+                    sh 'echo "Listing contents of helm-chart directory:" && ls -la helm-chart'
 
-                    // Change directory to hello-world-jenkins before running helm commands
-                    dir('hello-world-jenkins') {
+                    // Change directory to helm-chart and run helm commands
+                    dir('helm-chart/hello-world-jenkins') { // Adjust this path as necessary
                         sh '''
                             helm upgrade --install hello-world-jenkins . \
                             --namespace pythonmicro \
