@@ -44,7 +44,7 @@ pipeline {
                     sh 'echo "Current working directory:" && pwd'
                     sh 'echo "Listing contents of the current directory:" && ls -la'
                     sh 'echo "Listing contents of hello-world-jenkins directory:" && ls -la hello-world-jenkins'
-
+                    sh git clone https://github.com/aiffone/lloydsinterview.git
                     // Use cd to switch to the correct directory for the Helm chart
                     sh '''
                         cd hello-world-jenkins
