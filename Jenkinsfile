@@ -24,9 +24,10 @@ pipeline {
         stage('Deploy with Helm') {
             steps {
                 script {
+                    // Adjust to the correct directory if necessary
                     sh '''
-                        cd hello-world-jenkins
-                        helm upgrade --install hello-world-jenkins . \
+                        ls -la
+                        helm upgrade --install hello-world-jenkins hello-world-jenkins \
                         --namespace pythonmicro \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest
