@@ -39,14 +39,20 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying Hello World application with Helm to the pythonmicro namespace using hello-world-jenkins chart...'
+                    
+                    // Add debug commands to check the current directory and list contents
+                    sh 'echo "Current working directory:" && pwd'
+                    sh 'echo "Listing contents of the current directory:" && ls -la'
+
+                    // Update the Helm chart path to point to hello-world-jenkins chart directory
                     sh '''
-                        # Update the Helm chart path to point to hello-world-jenkins chart directory
                         helm upgrade --install hello-world-jenkins ./hello-world-jenkins \
                         --namespace pythonmicro \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest \
                         --debug
                     '''
+
                     // Verify that the deployment has been created in the namespace
                     sh 'kubectl get deployments -n pythonmicro'
                 }
