@@ -43,10 +43,13 @@ pipeline {
                     // Debug commands to check the current directory and list contents
                     sh 'echo "Current working directory:" && pwd'
                     sh 'echo "Listing contents of the current directory:" && ls -la'
-                    sh 'echo "Listing contents of hello-world-jenkins directory:" && ls -la hello-world-jenkins'
 
-                    // Use the correct path for the Helm chart
-                    dir('hello-world-jenkins') { // This is where your Helm chart is located
+                    // Move into the hello-world-jenkins directory
+                    dir('hello-world-jenkins') {
+                        echo 'Listing contents of hello-world-jenkins directory:'
+                        sh 'ls -la'
+
+                        // Deploy using Helm
                         sh '''
                             helm upgrade --install hello-world-jenkins . \
                             --namespace pythonmicro \
