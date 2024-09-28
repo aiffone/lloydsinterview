@@ -43,10 +43,10 @@ pipeline {
                     // Debug commands to check the current directory and list contents
                     sh 'echo "Current working directory:" && pwd'
                     sh 'echo "Listing contents of the current directory:" && ls -la'
-                    sh 'echo "Listing contents of helm-chart directory:" && ls -la helm-chart'
+                    sh 'echo "Listing contents of hello-world-jenkins directory:" && ls -la hello-world-jenkins'
 
-                    // Change directory to helm-chart and run helm commands
-                    dir('helm-chart/hello-world-jenkins') { // Adjust this path as necessary
+                    // Use the correct path for the Helm chart
+                    dir('hello-world-jenkins') { // This is where your Helm chart is located
                         sh '''
                             helm upgrade --install hello-world-jenkins . \
                             --namespace pythonmicro \
