@@ -57,8 +57,7 @@ pipeline {
                 script {
                     echo 'Deploying Hello World application with Helm to the pythonmicro namespace...'
                     sh '''
-                        helm list
-                        helm upgrade --install hello-world ./helm-chart \
+                        helm upgrade --install hello-world-jenk ./helm-chart \
                         --namespace pythonmicro \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest \
