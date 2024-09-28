@@ -35,23 +35,6 @@ pipeline {
             }
         }
 
-        stage('Delete Existing Helm Release') {
-            steps {
-                script {
-                    echo 'Checking and deleting any existing Helm release for hello-world in the pythonmicro namespace...'
-                    // Check if the Helm release "hello-world" exists in the "pythonmicro" namespace
-                    sh '''
-                        if helm list -n pythonmicro --short | grep hello-world; then
-                            echo "Existing release found. Deleting the old release..."
-                            helm delete hello-world -n pythonmicro
-                        else
-                            echo "No existing hello-world release found."
-                        fi
-                    '''
-                }
-            }
-        }
-
         stage('Deploy with Helm to pythonmicro Namespace') {
             steps {
                 script {
