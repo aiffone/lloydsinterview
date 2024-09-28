@@ -35,11 +35,29 @@ pipeline {
             }
         }
 
+        stage('Delete Existing Helm Release') {
+            steps {
+                script {
+                    echo 'Checking and deleting any existing Helm release for hello-world in the pythonmicro namespace...'
+                    // Check if the Helm release "hello-world" exists in the "pythonmicro" namespace
+                    sh '''
+                        if helm list -n pythonmicro --short | grep hello-world; then
+                            echo "Existing release found. Deleting the old release..."
+                            helm delete hello-world -n pythonmicro
+                        else
+                            echo "No existing hello-world release found."
+                        fi
+                    '''
+                }
+            }
+        }
+
         stage('Deploy with Helm to pythonmicro Namespace') {
             steps {
                 script {
                     echo 'Deploying Hello World application with Helm to the pythonmicro namespace...'
                     sh '''
+                        helm list
                         helm upgrade --install hello-world ./helm-chart \
                         --namespace pythonmicro \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
