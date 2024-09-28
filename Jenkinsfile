@@ -38,15 +38,17 @@ pipeline {
         stage('Deploy with Helm to pythonmicro Namespace') {
             steps {
                 script {
-                    echo 'Deploying Hello World application with Helm to the pythonmicro namespace...'
+                    echo 'Deploying Hello World application with Helm to the pythonmicro namespace using hello-world-jenkins chart...'
                     sh '''
-                        helm upgrade --install hello-world-jenk ./helm-chart \
+                        # Update the Helm chart path to point to hello-world-jenkins chart directory
+                        helm upgrade --install hello-world-jenkins ./hello-world-jenkins \
                         --namespace pythonmicro \
                         --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
                         --set image.tag=latest \
                         --debug
                     '''
-                    sh 'kubectl get deployments -n pythonmicro'  // Verify deployment in the new namespace
+                    // Verify that the deployment has been created in the namespace
+                    sh 'kubectl get deployments -n pythonmicro'
                 }
             }
         }

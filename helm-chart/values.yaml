@@ -1,4 +1,4 @@
-# values.yaml
+# Default values for the Helm chart
 
 # Namespace to deploy into
 namespace: pythonmicro
@@ -11,5 +11,5 @@ image:
   repository: europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world  # Updated image reference
   tag: latest
 
-# Container port
+# Container port for the application
 containerPort: 8080
