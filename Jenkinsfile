@@ -1,67 +1,74 @@
 pipeline {
     agent any
-
-    triggers {
-        // Trigger the pipeline on every push to the repository
-        githubPush()
+    environment {
+        PROJECT_ID = 'infra1-430721'  // Replace with your GCP Project ID
+        REGION = 'us-central1'
+        CLUSTER_NAME = 'infra1-gke-cluster'
+        SERVICE_ACCOUNT = 'jenkins@infra1-430721.iam.gserviceaccount.com'  // Replace with your service account if needed
     }
-
     stages {
-        stage('Checkout') {
+        stage('Build Docker Image') {
             steps {
-                // Check out the code from the GitHub repository
-                git url: 'https://github.com/aiffone/lloydsinterview.git', credentialsId: 'github-pat'
+                script {
+                    echo "Building the Docker image..."
+                    sh "docker build -t gcr.io/${env.PROJECT_ID}/hello-world:latest ."
+                }
             }
         }
-
+        stage('Push Docker Image to GCR') {
+            steps {
+                script {
+                    echo "Pushing the Docker image to Google Container Registry..."
+                    sh "docker push gcr.io/${env.PROJECT_ID}/hello-world:latest"
+                }
+            }
+        }
         stage('Authenticate with GKE') {
             steps {
-                // Authenticate with Google Cloud and GKE
-                withCredentials([file(credentialsId: 'gke-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                    sh 'gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project infra1-430721'
+                script {
+                    echo "Authenticating with GKE cluster..."
+                    sh """
+                        gcloud container clusters get-credentials ${env.CLUSTER_NAME} \
+                        --region ${env.REGION} --project ${env.PROJECT_ID}
+                    """
                 }
             }
         }
-
-        stage('Deploy with Helm') {
+        stage('Create Kubernetes Namespace') {
             steps {
                 script {
-                    // List the contents of the workspace and deploy with Helm
-                    sh '''
-                        echo "Current directory contents:"
-                        ls -la
-                        helm upgrade --install hello-world-jenkins helm-chart \
-                        --namespace pythonmicro \
-                        --set image.repository=europe-west1-docker.pkg.dev/infra1-430721/hello/hello-world \
-                        --set image.tag=latest
-                    '''
+                    echo "Creating namespace 'daemon' if it does not exist..."
+                    sh """
+                        kubectl get namespace daemon || kubectl create namespace daemon
+                    """
                 }
             }
         }
-
-        stage('Post Deployment Checks') {
+        stage('Deploy to GKE with Helm') {
             steps {
                 script {
-                    // Verify that the deployment was successful
-                    sh 'kubectl get pods -n pythonmicro'
-                    sh 'kubectl get svc -n pythonmicro'
+                    echo "Installing Helm and deploying the application..."
+                    sh """
+                        curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+                        helm upgrade --install hello-world-daemon ./hello-world/helm-chart \
+                        --set image.repository=gcr.io/${env.PROJECT_ID}/hello-world \
+                        --set image.tag=latest \
+                        --namespace daemon \
+                        --create-namespace
+                    """
                 }
             }
         }
     }
-
     post {
         always {
-            // Clean up the workspace after the build
-            echo 'Cleaning up workspace...'
-            cleanWs()
+            echo "Pipeline completed."
         }
         success {
-            echo 'Pipeline completed successfully!'
+            echo "Deployment succeeded!"
         }
         failure {
-            echo 'Pipeline failed. Please check the logs for more details.'
+            echo "Deployment failed."
         }
     }
 }
