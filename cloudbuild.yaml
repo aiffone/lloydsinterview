@@ -32,7 +32,7 @@ steps:
         --set controller.adminUser=admin \
         --set controller.adminPassword=adminpassword \
         --set controller.serviceType=LoadBalancer \
-        --set controller.installPlugins='kubernetes:1.31.0,workflow-aggregator:2.6,git:5.0.1,docker-workflow:1.26,blueocean:1.24.5' \
+        --set-string controller.installPlugins="kubernetes:1.31.0,workflow-aggregator:2.6,git:5.0.1,docker-workflow:1.26,blueocean:1.24.5" \
         --namespace jenkins \
         --create-namespace
     env:
