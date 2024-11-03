@@ -8,36 +8,30 @@ steps:
         echo "Authenticating with GKE in the region..."
         gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project $PROJECT_ID
 
-  # Step 2: Create the new namespace if it doesn't exist.
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  # Step 2: Install Docker and Docker Compose.
+  - name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
-        echo "Creating namespace 'jenkins' if it doesn't exist..."
-        kubectl get namespace jenkins || kubectl create namespace jenkins
+        echo "Installing Docker Compose..."
+        apt-get update && apt-get install -y docker-compose
 
-  # Step 3: Deploy Jenkins using Helm in the specified namespace.
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image
+  # Step 3: Build and run Jenkins using Docker Compose.
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'compose'
+      - 'up'
+      - '-d'  # Run in detached mode
+
+  # Step 4: Wait for Jenkins to be up and running (optional).
+  - name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
-        echo "Installing Helm..."
-        curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-        echo "Deploying Jenkins to GKE with Helm in the 'jenkins' namespace..."
-        helm repo add jenkins https://charts.jenkins.io
-        helm repo update
-        helm upgrade --install jenkins jenkins/jenkins \
-        --set controller.adminUser=admin \
-        --set controller.adminPassword=adminpassword \
-        --set controller.serviceType=LoadBalancer \
-        --set-string controller.installPlugins="kubernetes:1.31.0,workflow-aggregator:2.6,git:5.0.1,docker-workflow:1.26,blueocean:1.24.5" \
-        --namespace jenkins \
-        --create-namespace
-    env:
-      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
+        echo "Waiting for Jenkins to start..."
+        sleep 60  # Adjust the sleep time if necessary
 
 # Optional: Set the service account if necessary for specific permissions.
 serviceAccount: "514264950628-compute@developer.gserviceaccount.com"
