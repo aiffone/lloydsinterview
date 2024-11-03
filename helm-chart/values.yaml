@@ -11,3 +11,12 @@ image:
 
 # Container port
 containerPort: 8080  # Default port for Jenkins
+
+# Resource limits and requests for the Jenkins container
+resources:
+  requests:
+    memory: "256Mi"  # Minimum memory request
+    cpu: "500m"      # Minimum CPU request
+  limits:
+    memory: "512Mi"   # Maximum memory limit
+    cpu: "1"          # Maximum CPU limit
