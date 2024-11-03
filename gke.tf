@@ -1,5 +1,5 @@
-# Define variables for cluster names and region
-variable "region" {
+# Define a new variable for the region
+variable "infra_region" {
   description = "The GCP region to create the clusters in"
   default     = "us-central1"
 }
@@ -17,7 +17,7 @@ variable "infra2_cluster_name" {
 # Create the first GKE cluster
 resource "google_container_cluster" "infra1" {
   name     = var.infra1_cluster_name
-  location = var.region
+  location = var.infra_region  # Use the new region variable
 
   initial_node_count = 1
 
@@ -42,8 +42,8 @@ resource "google_container_node_pool" "infra1_nodes" {
   }
 
   node_config {
-    machine_type = "e2-medium" # Update to e2-medium as per your requirement
-    disk_size_gb = 10          # Set disk size to 10 GB
+    machine_type = "e2-medium"
+    disk_size_gb = 10
     disk_type    = "pd-standard"
     oauth_scopes = [
       "https://www.googleapis.com/auth/devstorage.read_only",
@@ -58,7 +58,7 @@ resource "google_container_node_pool" "infra1_nodes" {
 # Create the second GKE cluster
 resource "google_container_cluster" "infra2" {
   name     = var.infra2_cluster_name
-  location = var.region
+  location = var.infra_region  # Use the new region variable
 
   initial_node_count = 1
 
@@ -83,8 +83,8 @@ resource "google_container_node_pool" "infra2_nodes" {
   }
 
   node_config {
-    machine_type = "e2-medium" # Ensure consistency across clusters
-    disk_size_gb = 10          # Set disk size to 10 GB
+    machine_type = "e2-medium"
+    disk_size_gb = 10
     disk_type    = "pd-standard"
     oauth_scopes = [
       "https://www.googleapis.com/auth/devstorage.read_only",
