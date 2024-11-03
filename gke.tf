@@ -15,7 +15,7 @@ resource "google_container_cluster" "primary" {
   # Optional: Specify the node configuration to use standard disks instead of SSDs
   node_config {
     machine_type = "e2-medium"  # Select the appropriate machine type
-    disk_size_gb = 10
+    disk_size_gb = 20  # Increased disk size to 20 GB for more storage
     disk_type    = "pd-standard"  # Use standard persistent disk to reduce SSD quota usage
   }
 
@@ -32,13 +32,13 @@ resource "google_container_node_pool" "primary_nodes" {
   # Enable autoscaling for the node pool
   autoscaling {
     min_node_count = 1
-    max_node_count = 2
+    max_node_count = 5  # Increased max node count to allow scaling up to 5 nodes
   }
 
   # Node configuration for the custom node pool
   node_config {
-    machine_type = "e2-medium"
-    disk_size_gb = 10
+    machine_type = "e2-standard-2"  # Upgraded machine type to e2-standard-2 for more resources
+    disk_size_gb = 20  # Increased disk size to 20 GB for more storage
     disk_type    = "pd-standard"  # Use standard persistent disk to avoid SSD quota issue
     oauth_scopes = [
       "https://www.googleapis.com/auth/devstorage.read_only",
