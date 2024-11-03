@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-service  # Name of the service, based on the release name
-  namespace: {{ .Values.namespace }}  # Use the namespace value from values.yaml
+  name: {{ .Release.Name }}-service
+  namespace: {{ .Values.namespace }}
 spec:
-  type: LoadBalancer  # Changed from ClusterIP to LoadBalancer for external access
+  type: LoadBalancer  # Use LoadBalancer to expose Jenkins externally
   selector:
-    app: {{ .Release.Name }}  # Selector to match the deployment
+    app: {{ .Release.Name }}
   ports:
-    - port: 80  # Port that the service exposes
-      targetPort: {{ .Values.containerPort | default 8081 }}  # Port on the pod that the service will forward to
+    - port: 80  # Expose port 80 for external access
+      targetPort: {{ .Values.containerPort | default 8080 }}  # Forward to Jenkins port

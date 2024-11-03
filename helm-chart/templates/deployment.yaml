@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-deployment
-  namespace: {{ .Values.namespace }}  # Use the namespace value from values.yaml
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: {{ .Values.replicas }}  # Use replicas value from values.yaml
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}
@@ -15,6 +15,10 @@ spec:
     spec:
       containers:
       - name: {{ .Release.Name }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}  # Image reference from values.yaml
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         ports:
-        - containerPort: {{ .Values.containerPort }}  # Container port from values.yaml
+        - containerPort: {{ .Values.containerPort }}
+        # Add Jenkins specific configurations if needed
+        env:
+        - name: JENKINS_OPTS
+          value: "--httpPort=${CONTAINER_PORT}"  # Optional, to specify the Jenkins port

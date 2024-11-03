@@ -1,13 +1,5 @@
 steps:
-  # Step 1: Build the Docker image from the Dockerfile in the root directory.
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/hello-world:latest', '.']
-
-  # Step 2: Push the Docker image to Google Container Registry (GCR).
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/hello-world:latest']
-
-  # Step 3: Set up GKE authentication for the region.
+  # Step 1: Set up GKE authentication for the region.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image
     entrypoint: 'sh'
     args:
@@ -16,16 +8,16 @@ steps:
         echo "Authenticating with GKE in the region..."
         gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project $PROJECT_ID
 
-  # Step 4: Create the new namespace if it doesn't exist.
+  # Step 2: Create the new namespace if it doesn't exist.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
-        echo "Creating namespace 'microservices' if it doesn't exist..."
-        kubectl get namespace microservices || kubectl create namespace microservices
+        echo "Creating namespace 'jenkins' if it doesn't exist..."
+        kubectl get namespace jenkins || kubectl create namespace jenkins
 
-  # Step 5: Deploy the image to GKE using Helm in the specified namespace.
+  # Step 3: Deploy Jenkins using Helm in the specified namespace.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image
     entrypoint: 'sh'
     args:
@@ -33,11 +25,15 @@ steps:
       - |
         echo "Installing Helm..."
         curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-        echo "Deploying to GKE with Helm in the 'microservices' namespace..."
-        helm upgrade --install hello-world ./helm-chart \
-        --set image.repository=gcr.io/$PROJECT_ID/hello-world \
-        --set image.tag=latest \
-        --namespace microservices \
+        echo "Deploying Jenkins to GKE with Helm in the 'jenkins' namespace..."
+        helm repo add jenkins https://charts.jenkins.io
+        helm repo update
+        helm upgrade --install jenkins jenkins/jenkins \
+        --set controller.adminUser=admin \
+        --set controller.adminPassword=adminpassword \
+        --set controller.serviceType=LoadBalancer \
+        --set controller.installPlugins='["kubernetes:1.31.0", "workflow-aggregator:2.6", "git:5.0.1", "docker-workflow:1.26", "blueocean:1.24.5"]' \
+        --namespace jenkins \
         --create-namespace
     env:
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'

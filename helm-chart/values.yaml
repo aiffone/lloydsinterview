@@ -1,15 +1,13 @@
-# values.yaml
-
 # Namespace to deploy into
-namespace: microservices
+namespace: jenkins  # Ensure this matches your intended namespace
 
 # Number of replicas
-replicas: 2
+replicas: 1  # Typically, Jenkins runs as a single instance
 
 # Image settings
 image:
-  repository: europe-west1-docker.pkg.dev/kayprov/hello/hello-world  # Updated image reference
-  tag: latest
+  repository: jenkins/jenkins  # Official Jenkins Docker image
+  tag: lts  # Use the long-term support version
 
 # Container port
-containerPort: 8080
+containerPort: 8080  # Default port for Jenkins
