@@ -18,14 +18,13 @@ spec:
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         ports:
         - containerPort: {{ .Values.containerPort }}
-        # Add Jenkins specific configurations if needed
         env:
         - name: JENKINS_OPTS
           value: "--httpPort=${CONTAINER_PORT}"  # Optional, to specify the Jenkins port
         resources:
           requests:
-            memory: {{ .Values.resources.requests.memory }}  # e.g., "256Mi"
-            cpu: {{ .Values.resources.requests.cpu }}          # e.g., "500m"
+            memory: "256Mi"
+            cpu: "500m"
           limits:
-            memory: {{ .Values.resources.limits.memory }}      # e.g., "512Mi"
-            cpu: {{ .Values.resources.limits.cpu }}            # e.g., "1"
+            memory: "512Mi"
+            cpu: "1"
