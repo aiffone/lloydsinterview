@@ -44,7 +44,7 @@ steps:
       - 'CLOUDSDK_CONTAINER_CLUSTER=infra1-gke-cluster'
 
 # Optional: Set the service account if necessary for specific permissions.
-serviceAccount: "jenkins@infra1-430721.iam.gserviceaccount.com"
+serviceAccount: "514264950628-compute@developer.gserviceaccount.com"
 
 # Specify logs bucket for Cloud Build logs.
-logsBucket: "gs://cloudbuild-logs-01101"  # Replace with your actual bucket name.
+logsBucket: "gs://cloudbuild-logs-0111"  # Replace with your actual bucket name.
