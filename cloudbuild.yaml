@@ -8,24 +8,37 @@ steps:
         echo "Authenticating with GKE in the region..."
         gcloud container clusters get-credentials infra1-gke-cluster --region us-central1 --project $PROJECT_ID
 
-  # Step 2: Install Docker and Docker Compose.
-  - name: 'gcr.io/cloud-builders/docker'
+  # Step 2: Create the Jenkins namespace if it doesn't exist.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
-        echo "Installing Docker Compose..."
-        apt-get update && apt-get install -y docker-compose
+        echo "Creating namespace 'jenkins' if it doesn't exist..."
+        kubectl get namespace jenkins || kubectl create namespace jenkins
 
-  # Step 3: Build and run Jenkins using Docker Compose.
-  - name: 'gcr.io/cloud-builders/docker'
+  # Step 3: Run Jenkins using a Docker image in Kubernetes.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image
+    entrypoint: 'sh'
     args:
-      - 'compose'
-      - 'up'
-      - '-d'  # Run in detached mode
+      - '-c'
+      - |
+        echo "Deploying Jenkins using Docker in the 'jenkins' namespace..."
+        kubectl run jenkins --image=jenkins/jenkins:lts --namespace jenkins --port=8080 \
+        --restart=Never -- \
+        sh -c "jenkins.war"
+  
+  # Step 4: Expose Jenkins as a service in the 'jenkins' namespace.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Use the cloud-sdk image
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        echo "Creating a service for Jenkins..."
+        kubectl expose pod jenkins --type=LoadBalancer --port=80 --target-port=8080 --namespace jenkins
 
-  # Step 4: Wait for Jenkins to be up and running (optional).
-  - name: 'gcr.io/cloud-builders/docker'
+  # Optional: Wait for Jenkins to be up and running (adjust as necessary).
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'sh'
     args:
       - '-c'
